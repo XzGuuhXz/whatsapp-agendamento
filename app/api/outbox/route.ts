@@ -3,6 +3,9 @@ import { flushOutbox } from "@/lib/chatbot";
 export const runtime = "nodejs";
 // Agendador externo: POST com Authorization: Bearer <CRON_SECRET>.
 export async function POST(request: Request) {
+  if (process.env.WHATSAPP_TRANSPORT?.trim().toLowerCase() === "baileys") {
+    return Response.json({ error: "Envio HTTP Meta desabilitado; worker Baileys selecionado" }, { status: 409 });
+  }
   const secret = process.env.CRON_SECRET?.trim();
   const supplied = request.headers.get("authorization") ?? "";
   const expected = `Bearer ${secret}`;
