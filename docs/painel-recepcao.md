@@ -56,4 +56,5 @@ A chave `SUPABASE_SERVICE_ROLE_KEY` não é usada no navegador e não deve receb
 - Nenhum serviço fictício foi inserido.
 - A migration precisa ser aplicada no Supabase antes de o login e o catálogo funcionarem.
 - Esta etapa ainda não expõe dados de pacientes ou agendamentos no painel.
+- O painel carrega os catálogos após confirmar o perfil do funcionário; os módulos clínicos permanecem bloqueados até a próxima etapa.
 - Não foi feito deploy.
