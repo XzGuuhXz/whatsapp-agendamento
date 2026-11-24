@@ -9,8 +9,9 @@ type OutboxReply = {
 };
 
 export async function flushOutbox(socket: WASocket, limit = 10): Promise<number> {
-  let sent = 0;
+  if (!socket.user) return 0;
 
+  let sent = 0;
   for (let index = 0; index < limit; index += 1) {
     const { data, error } = await supabase.rpc("chatbot_claim_reply", {
       p_phone: null,
