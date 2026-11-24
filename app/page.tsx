@@ -152,10 +152,12 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (profile) {
+    if (!profile) return;
+    const timer = window.setTimeout(() => {
       void loadServices();
       void loadProfessionals();
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [profile, loadServices, loadProfessionals]);
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
