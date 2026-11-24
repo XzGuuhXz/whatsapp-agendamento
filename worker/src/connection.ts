@@ -1,7 +1,7 @@
 import makeWASocket, {
   fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
-  useMultiFileAuthState,
+  useMultiFileAuthState as loadAuthState,
   type WASocket,
 } from "baileys";
 import { mkdir, chmod } from "node:fs/promises";
@@ -20,7 +20,7 @@ export async function connectBaileys(): Promise<WASocket> {
   await mkdir(authDirectory, { recursive: true, mode: 0o700 });
   await chmod(authDirectory, 0o700);
 
-  const { state, saveCreds } = await useMultiFileAuthState(authDirectory);
+  const { state, saveCreds } = await loadAuthState(authDirectory);
   const { version } = await fetchLatestBaileysVersion();
 
   const socket = makeWASocket({
