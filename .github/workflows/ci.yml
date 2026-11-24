@@ -26,3 +26,19 @@ jobs:
         run: |
           npm install --no-audit --no-fund
           npm run typecheck
+
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Initialize local Supabase configuration
+        run: supabase init
+      - name: Start local Supabase
+        run: supabase start -x studio,mailpit,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor
+      - name: Apply migrations
+        run: supabase db reset
+      - name: Run PostgreSQL integration tests
+        run: psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f tests/database.sql
