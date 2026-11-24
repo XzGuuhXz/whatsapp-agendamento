@@ -34,28 +34,15 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: latest
-      - name: Initialize local Supabase configuration
+      - name: Create local Supabase configuration
         run: |
-          supabase init --force
-          test -f supabase/config.toml
-          python - <<'PY'
-          from pathlib import Path
-          import re
+          mkdir -p supabase
+          cat > supabase/config.toml <<'EOF'
+          project_id = "whatsapp-agendamento"
 
-          config = Path("supabase/config.toml")
-          content = config.read_text()
-          section = re.search(r"(?ms)^\[db\.migrations\]\s*$.*?(?=^\[|\Z)", content)
-          if section:
-              block = section.group(0)
-              if re.search(r"(?m)^enabled\s*=", block):
-                  block = re.sub(r"(?m)^enabled\s*=.*$", "enabled = false", block)
-              else:
-                  block += "\nenabled = false\n"
-              content = content[:section.start()] + block + content[section.end():]
-          else:
-              content += "\n[db.migrations]\nenabled = false\n"
-          config.write_text(content)
-          PY
+          [db.migrations]
+          enabled = false
+          EOF
       - name: Start local Supabase without applying migrations
         run: supabase start -x studio,mailpit,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor
       - name: Prepare empty database with original schema
