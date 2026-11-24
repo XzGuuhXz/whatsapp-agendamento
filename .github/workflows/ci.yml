@@ -35,8 +35,27 @@ jobs:
         with:
           version: latest
       - name: Initialize local Supabase configuration
-        run: supabase init
-      - name: Start local Supabase
+        run: |
+          supabase init
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          config = Path("supabase/config.toml")
+          content = config.read_text()
+          section = re.search(r"(?ms)^\\[db\\.migrations\\]\\s*$.*?(?=^\\[|\\Z)", content)
+          if section:
+              block = section.group(0)
+              if re.search(r"(?m)^enabled\\s*=", block):
+                  block = re.sub(r"(?m)^enabled\\s*=.*$", "enabled = false", block)
+              else:
+                  block += "\\nenabled = false\\n"
+              content = content[:section.start()] + block + content[section.end():]
+          else:
+              content += "\\n[db.migrations]\\nenabled = false\\n"
+          config.write_text(content)
+          PY
+      - name: Start local Supabase without applying migrations
         run: supabase start -x studio,mailpit,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor
       - name: Prepare empty database with original schema
         run: psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f tests/fixtures/base_schema.sql
