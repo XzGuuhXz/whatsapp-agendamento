@@ -38,7 +38,9 @@ jobs:
         run: supabase init
       - name: Start local Supabase
         run: supabase start -x studio,mailpit,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor
+      - name: Prepare empty database with original schema
+        run: psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f tests/fixtures/base_schema.sql
       - name: Apply migrations
-        run: supabase db reset
+        run: supabase migration up --local
       - name: Run PostgreSQL integration tests
         run: psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f tests/database.sql
