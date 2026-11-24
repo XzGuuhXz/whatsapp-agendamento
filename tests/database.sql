@@ -59,6 +59,20 @@ BEGIN
  IF EXISTS(SELECT 1 FROM public.chatbot_claim_reply(test_phone)) THEN RAISE EXCEPTION 'Concurrent reply claim allowed';END IF;
  PERFORM public.chatbot_finish_reply(reply.id,reply.claim_token,'wamid.test-outgoing',NULL);
  IF NOT EXISTS(SELECT 1 FROM public.messages WHERE whatsapp_message_id='wamid.test-outgoing' AND direction='outgoing') THEN RAISE EXCEPTION 'Outbox log failed';END IF;
+
+ IF NOT has_column_privilege('authenticated','public.clients','name','SELECT')
+    OR has_column_privilege('authenticated','public.clients','phone','SELECT')
+    OR has_column_privilege('authenticated','public.clients','email','SELECT') THEN
+   RAISE EXCEPTION 'Reception client column permissions are too broad';
+ END IF;
+ IF NOT has_column_privilege('authenticated','public.appointments','starts_at','SELECT')
+    OR has_column_privilege('authenticated','public.appointments','notes','SELECT') THEN
+   RAISE EXCEPTION 'Reception appointment column permissions are too broad';
+ END IF;
+ IF has_column_privilege('anon','public.clients','name','SELECT')
+    OR has_column_privilege('anon','public.appointments','starts_at','SELECT') THEN
+   RAISE EXCEPTION 'Anonymous role can read reception data';
+ END IF;
  IF has_function_privilege('anon','public.chatbot_receive(text,text,text,text,text)','EXECUTE') OR has_table_privilege('anon','public.chatbot_outbox','SELECT') THEN RAISE EXCEPTION 'Public access to private operations';END IF;
 END $$;
 SELECT 'PASS: service-professional filtering, booking, date validation, rescheduling, cancellation, deduplication, outbox lease, message logging, permissions' AS tests;
