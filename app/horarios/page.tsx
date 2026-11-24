@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
 type BusinessHour = { id?: string; day_of_week: number; opens_at: string; closes_at: string; active: boolean };
@@ -9,6 +10,7 @@ const days = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quint
 const defaults = (): BusinessHour[] => days.map((_, day_of_week) => ({ day_of_week, opens_at: "08:00", closes_at: "17:00", active: false }));
 
 export default function HoursPage() {
+  const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
   const [hours, setHours] = useState<BusinessHour[]>(defaults());
@@ -39,8 +41,8 @@ export default function HoursPage() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { void checkAccess(); }, [checkAccess]);
-  useEffect(() => { if (authorized) void loadHours(); }, [authorized, loadHours]);
+  useEffect(() => { void Promise.resolve().then(checkAccess); }, [checkAccess]);
+  useEffect(() => { if (authorized) void Promise.resolve().then(loadHours); }, [authorized, loadHours]);
 
   function change(day: number, patch: Partial<BusinessHour>) {
     setHours((current) => current.map((item) => item.day_of_week === day ? { ...item, ...patch } : item));
@@ -60,7 +62,7 @@ export default function HoursPage() {
     else { setMessage("Horários de funcionamento salvos."); await loadHours(); }
     setSaving(false);
   }
-  async function logout() { await supabase.auth.signOut(); window.location.href = "/"; }
+  async function logout() { await supabase.auth.signOut(); router.replace("/"); }
 
   if (checking) return <main className="auth-screen"><section className="auth-card">Verificando acesso...</section></main>;
   if (!authorized) return <main className="auth-screen"><section className="auth-card"><h1>Acesso restrito</h1><p>Entre pelo painel com uma conta de funcionário autorizada.</p><Link className="primary-button" href="/">Ir para o login</Link></section></main>;
