@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
 type Service = { id: string; name: string; active: boolean };
@@ -10,6 +11,7 @@ type LinkRow = { service_id: string; professional_id: string };
 type ServiceLink = { serviceId: string; professionalId: string };
 
 export default function ServiceProfessionalLinksPage() {
+  const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
   const [services, setServices] = useState<Service[]>([]);
@@ -51,8 +53,8 @@ export default function ServiceProfessionalLinksPage() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { void checkAccess(); }, [checkAccess]);
-  useEffect(() => { if (authorized) void loadData(); }, [authorized, loadData]);
+  useEffect(() => { void Promise.resolve().then(checkAccess); }, [checkAccess]);
+  useEffect(() => { if (authorized) void Promise.resolve().then(loadData); }, [authorized, loadData]);
 
   function isLinked(serviceId: string, professionalId: string) {
     return links.some((link) => link.serviceId === serviceId && link.professionalId === professionalId);
@@ -84,7 +86,7 @@ export default function ServiceProfessionalLinksPage() {
 
   async function logout() {
     await supabase.auth.signOut();
-    window.location.href = "/";
+    router.replace("/");
   }
 
   if (checking) return <main className="auth-screen"><section className="auth-card">Verificando acesso...</section></main>;
