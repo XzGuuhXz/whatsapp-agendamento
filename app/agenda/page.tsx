@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
 type Related<T> = T | T[] | null;
@@ -29,6 +30,7 @@ function localDateTime(value: string) {
   return new Date(value).toLocaleString("pt-BR", { timeZone: "America/Campo_Grande", dateStyle: "short", timeStyle: "short" });
 }
 export default function AgendaPage() {
+  const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
   const [date, setDate] = useState(todayLocal);
@@ -60,8 +62,8 @@ export default function AgendaPage() {
     setLoading(false);
   }, [date]);
 
-  useEffect(() => { void checkAccess(); }, [checkAccess]);
-  useEffect(() => { if (authorized) void loadAppointments(); }, [authorized, loadAppointments]);
+  useEffect(() => { void Promise.resolve().then(checkAccess); }, [checkAccess]);
+  useEffect(() => { if (authorized) void Promise.resolve().then(loadAppointments); }, [authorized, loadAppointments]);
 
   async function updateStatus(id: string, status: Appointment["status"]) {
     setError(""); setMessage("");
@@ -69,7 +71,7 @@ export default function AgendaPage() {
     if (updateError) setError("Não foi possível atualizar o status. Verifique as permissões.");
     else { setMessage("Status do agendamento atualizado."); await loadAppointments(); }
   }
-  async function logout() { await supabase.auth.signOut(); window.location.href = "/"; }
+  async function logout() { await supabase.auth.signOut(); router.replace("/"); }
 
   if (checking) return <main className="auth-screen"><section className="auth-card">Verificando acesso...</section></main>;
   if (!authorized) return <main className="auth-screen"><section className="auth-card"><h1>Acesso restrito</h1><p>Entre pelo painel com uma conta de funcionário autorizada.</p><Link className="primary-button" href="/">Ir para o login</Link></section></main>;
