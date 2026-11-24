@@ -4,6 +4,9 @@ import { flushOutbox, receiveMessage } from "@/lib/chatbot";
 import { requiredEnv } from "@/lib/env";
 export const runtime = "nodejs";
 export function GET(request: NextRequest) {
+  if (process.env.WHATSAPP_TRANSPORT?.trim().toLowerCase() === "baileys") {
+    return NextResponse.json({ error: "Transporte Baileys ativo" }, { status: 409 });
+  }
   const params = request.nextUrl.searchParams;
   const expected = process.env.WHATSAPP_VERIFY_TOKEN?.trim();
   if (!expected) return NextResponse.json({ error: "Webhook não configurado" }, { status: 503 });
@@ -13,6 +16,9 @@ export function GET(request: NextRequest) {
   return NextResponse.json({ error: "Verificação inválida" }, { status: 403 });
 }
 export async function POST(request: NextRequest) {
+  if (process.env.WHATSAPP_TRANSPORT?.trim().toLowerCase() === "baileys") {
+    return NextResponse.json({ error: "Transporte Baileys ativo; webhook Meta desabilitado" }, { status: 409 });
+  }
   try {
     const secret = requiredEnv("WHATSAPP_APP_SECRET");
     const phoneId = requiredEnv("WHATSAPP_PHONE_NUMBER_ID");
