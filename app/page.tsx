@@ -124,8 +124,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (profile && view === "services") void loadServices();
-  }, [profile, view, loadServices]);
+    if (profile) void loadServices();
+  }, [profile, loadServices]);
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -302,7 +302,7 @@ export default function Home() {
               <section className="stats-grid" aria-label="Resumo da agenda">
                 <article className="stat-card"><div className="stat-top"><span>Agendamentos de hoje</span><span className="stat-icon lavender">▣</span></div><div className="stat-value">—</div><div className="stat-foot">Módulo em desenvolvimento</div></article>
                 <article className="stat-card"><div className="stat-top"><span>Aguardando confirmação</span><span className="stat-icon amber">◷</span></div><div className="stat-value">—</div><div className="stat-foot">Módulo em desenvolvimento</div></article>
-                <article className="stat-card"><div className="stat-top"><span>Serviços ativos</span><span className="stat-icon mint">✳</span></div><div className="stat-value">{services.length || "—"}</div><div className="stat-foot">Abra Serviços para consultar o catálogo</div></article>
+                <article className="stat-card"><div className="stat-top"><span>Serviços ativos</span><span className="stat-icon mint">✳</span></div><div className="stat-value">{services.filter((service) => service.active).length || "—"}</div><div className="stat-foot">Abra Serviços para consultar o catálogo</div></article>
                 <article className="stat-card"><div className="stat-top"><span>Profissionais</span><span className="stat-icon blue">♙</span></div><div className="stat-value">—</div><div className="stat-foot">Módulo em desenvolvimento</div></article>
               </section>
               <section className="panel-section"><div className="section-heading"><div><h2>Próximas etapas</h2><p>Os módulos serão liberados conforme a configuração segura do sistema.</p></div></div><div className="surface-card"><div className="next-steps"><div><span>01</span><strong>Catálogo de serviços</strong><small>Cadastro e ativação de serviços reais</small></div><div><span>02</span><strong>Profissionais</strong><small>Equipe e disponibilidade</small></div><div><span>03</span><strong>Agenda</strong><small>Consulta e gerenciamento de horários</small></div></div></div></section>
