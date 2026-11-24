@@ -362,3 +362,34 @@ button:disabled { cursor: not-allowed; opacity: .6; }
   .next-steps > div, .next-steps > div:first-child { border-right: 0; border-bottom: 1px solid #edf0f2; padding: 0 0 13px; }
   .next-steps > div:last-child { border-bottom: 0; padding-bottom: 0; }
 }
+
+
+/* Reception agenda and business hours */
+.agenda-page { min-height: 100vh; max-width: 1440px; margin: 0 auto; padding: 34px clamp(18px, 4vw, 58px); }
+.agenda-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+.agenda-header h1 { margin: 16px 0 7px; color: #263440; font-size: clamp(24px, 3vw, 32px); letter-spacing: -.8px; }
+.agenda-header p { margin: 0; color: #87929d; font-size: 12px; }
+.agenda-back { color: var(--teal); font-size: 12px; font-weight: 700; }
+.agenda-card { padding: 24px; }
+.agenda-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 18px; }
+.agenda-toolbar label { color: #596673; font-size: 11px; font-weight: 700; }
+.agenda-toolbar input, .agenda-table select, .hours-time input { min-height: 36px; border: 1px solid #dfe6e9; border-radius: 7px; background: #fff; padding: 0 10px; color: #43505c; font: inherit; font-size: 11px; }
+.agenda-table select { max-width: 170px; }
+.agenda-privacy { margin-top: 16px; color: #929ca6; font-size: 10px; line-height: 1.6; }
+.hours-list { display: grid; border-top: 1px solid #edf0f2; }
+.hours-row { display: grid; grid-template-columns: minmax(150px, 1.2fr) minmax(130px, .8fr) minmax(130px, .8fr) 70px; align-items: center; gap: 18px; border-bottom: 1px solid #edf0f2; padding: 14px 4px; }
+.hours-day { display: flex; align-items: center; gap: 10px; color: #4c5965; font-size: 12px; font-weight: 700; }
+.hours-day input { accent-color: var(--teal); width: 16px; height: 16px; }
+.hours-time { display: grid; gap: 6px; color: #8994a0; font-size: 10px; font-weight: 700; }
+.hours-time input { width: 100%; }
+.hours-time input:disabled { background: #f4f6f7; color: #a7afb7; }
+.hours-state { color: var(--teal); font-size: 10px; font-weight: 700; text-align: right; }
+.hours-disabled .hours-state { color: #929ca6; }
+@media (max-width: 700px) {
+  .agenda-page { padding: 22px 14px; }
+  .agenda-card { padding: 16px; }
+  .hours-row { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .hours-day { grid-column: 1 / -1; }
+  .hours-state { text-align: left; }
+  .agenda-header { align-items: center; }
+}
