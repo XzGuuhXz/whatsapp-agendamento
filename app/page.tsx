@@ -320,7 +320,7 @@ export default function Home() {
             <p>Use sua conta individual de funcionário para acessar a agenda.</p>
           </div>
           <form className="auth-form" onSubmit={handleLogin}>
-            <label htmlFor="email">E-mail institucional ou autorizado</label>
+            <label htmlFor="email">E-mail cadastrado</label>
             <input id="email" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} required />
             <label htmlFor="password">Senha</label>
             <input id="password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required />
@@ -329,7 +329,7 @@ export default function Home() {
               {authBusy ? "Verificando..." : "Entrar"}
             </button>
           </form>
-          <p className="auth-footnote">O acesso é individual. Se ainda não possui uma conta autorizada, procure o administrador do sistema.</p>
+          <p className="auth-footnote">O acesso é individual. Use o e-mail cadastrado pelo administrador do sistema.</p>
         </section>
       </main>
     );
@@ -375,14 +375,12 @@ export default function Home() {
                 <div><div className="eyebrow">CENTRAL DE ATENDIMENTO</div><h1>Visão geral</h1><p className="page-description">Bem-vindo(a), {profile.display_name}. Este é o painel interno do SAE.</p></div>
                 <div className="date-chip"><span aria-hidden="true">◷</span> Agenda do SAE</div>
               </div>
-              <div className="notice"><span className="notice-icon">!</span><div><strong>Agenda em desenvolvimento</strong><p>O próximo módulo será a visualização e o gerenciamento dos agendamentos. Nenhum dado de paciente é exibido nesta etapa.</p></div></div>
+              <div className="notice"><span className="notice-icon">i</span><div><strong>Agenda disponível</strong><p>Consulte os atendimentos do dia pelo menu Agenda. Os dados exibidos dependem dos cadastros e horários configurados pela coordenação do SAE.</p></div></div>
               <section className="stats-grid" aria-label="Resumo da agenda">
-                <article className="stat-card"><div className="stat-top"><span>Agendamentos de hoje</span><span className="stat-icon lavender">▣</span></div><div className="stat-value">—</div><div className="stat-foot">Módulo em desenvolvimento</div></article>
-                <article className="stat-card"><div className="stat-top"><span>Aguardando confirmação</span><span className="stat-icon amber">◷</span></div><div className="stat-value">—</div><div className="stat-foot">Módulo em desenvolvimento</div></article>
                 <article className="stat-card"><div className="stat-top"><span>Serviços ativos</span><span className="stat-icon mint">✳</span></div><div className="stat-value">{services.filter((service) => service.active).length}</div><div className="stat-foot">Abra Serviços para consultar o catálogo</div></article>
                 <article className="stat-card"><div className="stat-top"><span>Profissionais ativos</span><span className="stat-icon blue">♙</span></div><div className="stat-value">{professionals.filter((professional) => professional.active).length}</div><div className="stat-foot">Equipe cadastrada no painel</div></article>
               </section>
-              <section className="panel-section"><div className="section-heading"><div><h2>Próximas etapas</h2><p>Os módulos serão liberados conforme a configuração segura do sistema.</p></div></div><div className="surface-card"><div className="next-steps"><div><span>01</span><strong>Catálogo de serviços</strong><small>Cadastro e ativação de serviços reais</small></div><div><span>02</span><strong>Profissionais</strong><small>Equipe e disponibilidade</small></div><div><span>03</span><strong>Agenda</strong><small>Consulta e gerenciamento de horários</small></div></div></div></section>
+              <section className="panel-section"><div className="section-heading"><div><h2>Acesso rápido</h2><p>Atalhos para as rotinas da recepção.</p></div></div><div className="surface-card"><div className="next-steps"><a href="/agenda"><span>01</span><strong>Agenda diária</strong><small>Consultar e atualizar atendimentos</small></a><a href="/horarios"><span>02</span><strong>Horários</strong><small>Consultar o expediente configurado</small></a><a href="/vinculos"><span>03</span><strong>Vínculos</strong><small>Associar serviços e profissionais</small></a></div></div></section>
             </>
           ) : view === "services" ? (
             <>
