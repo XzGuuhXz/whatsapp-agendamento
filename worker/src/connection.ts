@@ -1,5 +1,4 @@
 import makeWASocket, {
-  DisconnectReason,
   fetchLatestBaileysVersion,
   makeCacheableSignalKeyStore,
   useMultiFileAuthState,
@@ -15,8 +14,6 @@ const logger = pino({ level: process.env.LOG_LEVEL?.trim() || "info" });
 const authDirectory = path.resolve(
   process.env.BAILEYS_AUTH_DIR?.trim() || "./.baileys-auth",
 );
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function connectBaileys(): Promise<WASocket> {
   process.umask(0o077);
@@ -35,7 +32,6 @@ export async function connectBaileys(): Promise<WASocket> {
     },
     markOnlineOnConnect: false,
     syncFullHistory: false,
-    shouldSyncHistoryMessage: () => false,
   });
 
   socket.ev.on("creds.update", saveCreds);
@@ -69,37 +65,4 @@ export async function connectBaileys(): Promise<WASocket> {
   });
 
   return socket;
-}
-
-export async function runConnectionLoop(): Promise<void> {
-  while (!process.exitCode) {
-    let socket: WASocket | undefined;
-
-    try {
-      socket = await connectBaileys();
-      const closeStatus = await new Promise<number | undefined>((resolve) => {
-        socket!.ev.on("connection.update", ({ connection, lastDisconnect }) => {
-          if (connection === "close") {
-            const status = (lastDisconnect?.error as { output?: { statusCode?: number } } | undefined)
-              ?.output?.statusCode;
-            resolve(status);
-          }
-        });
-      });
-
-      if (closeStatus === DisconnectReason.loggedOut) {
-        throw new Error("Sessão desconectada pelo WhatsApp. Remova/repare a autenticação manualmente antes de reiniciar.");
-      }
-    } catch (error) {
-      console.error("Worker Baileys:", error instanceof Error ? error.message : error);
-      if (process.exitCode) break;
-    } finally {
-      socket?.end(undefined);
-    }
-
-    if (!process.exitCode) {
-      console.log("Nova tentativa de conexão em 5 segundos...");
-      await sleep(5000);
-    }
-  }
 }
