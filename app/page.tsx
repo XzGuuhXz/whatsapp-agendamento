@@ -18,11 +18,14 @@ type Service = {
   active: boolean;
 };
 
-type View = "overview" | "services";
+type Professional = { id: string; name: string; active: boolean };
+
+type View = "overview" | "services" | "professionals";
 
 const navigation: { id: View; label: string; icon: string }[] = [
   { id: "overview", label: "Visão geral", icon: "▦" },
   { id: "services", label: "Serviços", icon: "✳" },
+  { id: "professionals", label: "Profissionais", icon: "♙" },
 ];
 
 export default function Home() {
@@ -35,6 +38,13 @@ export default function Home() {
   const [authBusy, setAuthBusy] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [servicesLoading, setServicesLoading] = useState(false);
+  const [professionals, setProfessionals] = useState<Professional[]>([]);
+  const [professionalsLoading, setProfessionalsLoading] = useState(false);
+  const [professionalError, setProfessionalError] = useState("");
+  const [professionalMessage, setProfessionalMessage] = useState("");
+  const [professionalName, setProfessionalName] = useState("");
+  const [editingProfessionalId, setEditingProfessionalId] = useState<string | null>(null);
+  const [savingProfessional, setSavingProfessional] = useState(false);
   const [serviceError, setServiceError] = useState("");
   const [serviceMessage, setServiceMessage] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -84,6 +94,7 @@ export default function Home() {
       if (event === "SIGNED_OUT" || !session?.user) {
         setProfile(null);
         setServices([]);
+        setProfessionals([]);
         setView("overview");
         setLoading(false);
         return;
@@ -123,9 +134,29 @@ export default function Home() {
     setServicesLoading(false);
   }, []);
 
+  const loadProfessionals = useCallback(async () => {
+    setProfessionalsLoading(true);
+    setProfessionalError("");
+    const { data, error } = await supabase
+      .from("professionals")
+      .select("id, name, active")
+      .order("name", { ascending: true });
+
+    if (error) {
+      setProfessionalError("Não foi possível carregar os profissionais. Verifique as permissões do Supabase.");
+      setProfessionals([]);
+    } else {
+      setProfessionals((data ?? []) as Professional[]);
+    }
+    setProfessionalsLoading(false);
+  }, []);
+
   useEffect(() => {
-    if (profile) void loadServices();
-  }, [profile, loadServices]);
+    if (profile) {
+      void loadServices();
+      void loadProfessionals();
+    }
+  }, [profile, loadServices, loadProfessionals]);
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -228,6 +259,47 @@ export default function Home() {
     }
   }
 
+  async function saveProfessional(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setProfessionalError("");
+    setProfessionalMessage("");
+    if (professionalName.trim().length < 2) {
+      setProfessionalError("Informe um nome com pelo menos 2 caracteres.");
+      return;
+    }
+
+    setSavingProfessional(true);
+    const result = editingProfessionalId
+      ? await supabase.from("professionals").update({ name: professionalName.trim() }).eq("id", editingProfessionalId)
+      : await supabase.from("professionals").insert({ name: professionalName.trim() });
+
+    if (result.error) {
+      setProfessionalError("Não foi possível salvar. Verifique as permissões e a estrutura da tabela professionals.");
+    } else {
+      setProfessionalMessage(editingProfessionalId ? "Profissional atualizado." : "Profissional cadastrado.");
+      setProfessionalName("");
+      setEditingProfessionalId(null);
+      await loadProfessionals();
+    }
+    setSavingProfessional(false);
+  }
+
+  async function toggleProfessional(professional: Professional) {
+    setProfessionalError("");
+    setProfessionalMessage("");
+    const { error } = await supabase
+      .from("professionals")
+      .update({ active: !professional.active })
+      .eq("id", professional.id);
+
+    if (error) {
+      setProfessionalError("Não foi possível alterar o status do profissional.");
+    } else {
+      setProfessionalMessage(professional.active ? "Profissional desativado." : "Profissional reativado.");
+      await loadProfessionals();
+    }
+  }
+
   if (loading) {
     return <main className="auth-screen"><div className="auth-card"><span className="brand-mark">S</span><p>Verificando acesso...</p></div></main>;
   }
@@ -307,7 +379,7 @@ export default function Home() {
               </section>
               <section className="panel-section"><div className="section-heading"><div><h2>Próximas etapas</h2><p>Os módulos serão liberados conforme a configuração segura do sistema.</p></div></div><div className="surface-card"><div className="next-steps"><div><span>01</span><strong>Catálogo de serviços</strong><small>Cadastro e ativação de serviços reais</small></div><div><span>02</span><strong>Profissionais</strong><small>Equipe e disponibilidade</small></div><div><span>03</span><strong>Agenda</strong><small>Consulta e gerenciamento de horários</small></div></div></div></section>
             </>
-          ) : (
+          ) : view === "services" ? (
             <>
               <div className="welcome-row"><div><div className="eyebrow">CONFIGURAÇÃO DO ATENDIMENTO</div><h1>Serviços</h1><p className="page-description">Cadastre os serviços que poderão ser selecionados no fluxo de agendamento.</p></div><span className="section-tag">Catálogo do SAE</span></div>
               <div className="notice"><span className="notice-icon">i</span><div><strong>Cadastre somente serviços confirmados pela coordenação</strong><p>Os serviços cadastrados e ativos poderão aparecer como opções no chatbot. Não inclua informações sensíveis de pacientes.</p></div></div>
@@ -330,6 +402,29 @@ export default function Home() {
                   <div className="form-card-heading list-heading"><div><h2>Catálogo cadastrado</h2><p>{services.length} serviço(s) encontrado(s)</p></div><button className="secondary-button" onClick={() => void loadServices()} disabled={servicesLoading}>Atualizar</button></div>
                   {servicesLoading ? <div className="list-empty">Carregando serviços...</div> : services.length === 0 ? <div className="list-empty"><span className="empty-state-icon">✳</span><strong>Nenhum serviço cadastrado</strong><p>Adicione os serviços confirmados pela coordenação para começar a montar o catálogo.</p></div> : (
                     <div className="service-table-wrap"><table className="service-table"><thead><tr><th>Serviço</th><th>Duração</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead><tbody>{services.map((service) => <tr key={service.id}><td><strong>{service.name}</strong></td><td>{service.duration_minutes} min</td><td>{service.price == null ? "—" : service.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td><td><span className={service.active ? "service-status active" : "service-status inactive"}>{service.active ? "Ativo" : "Inativo"}</span></td><td><div className="table-actions"><button onClick={() => startEdit(service)}>Editar</button><button onClick={() => void toggleService(service)}>{service.active ? "Desativar" : "Ativar"}</button></div></td></tr>)}</tbody></table></div>
+                  )}
+                </section>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="welcome-row"><div><div className="eyebrow">EQUIPE DE ATENDIMENTO</div><h1>Profissionais</h1><p className="page-description">Cadastre e mantenha atualizada a equipe que poderá receber agendamentos.</p></div><span className="section-tag">Equipe do SAE</span></div>
+              <div className="notice"><span className="notice-icon">i</span><div><strong>Cadastre somente profissionais autorizados</strong><p>Os profissionais ativos poderão ser associados aos serviços no fluxo de agendamento.</p></div></div>
+              <div className="service-layout">
+                <section className="surface-card service-form-card">
+                  <div className="form-card-heading"><h2>{editingProfessionalId ? "Editar profissional" : "Novo profissional"}</h2><p>Informe o nome conforme cadastro institucional.</p></div>
+                  <form className="service-form" onSubmit={saveProfessional}>
+                    <label htmlFor="professional-name">Nome do profissional</label>
+                    <input id="professional-name" value={professionalName} onChange={(event) => setProfessionalName(event.target.value)} placeholder="Nome completo" required maxLength={100} />
+                    {professionalError && <p className="form-error" role="alert">{professionalError}</p>}
+                    {professionalMessage && <p className="form-success" role="status">{professionalMessage}</p>}
+                    <div className="form-actions"><button className="primary-button" type="submit" disabled={savingProfessional}>{savingProfessional ? "Salvando..." : editingProfessionalId ? "Salvar alterações" : "Cadastrar profissional"}</button>{editingProfessionalId && <button className="secondary-button" type="button" onClick={() => { setEditingProfessionalId(null); setProfessionalName(""); }}>Cancelar</button>}</div>
+                  </form>
+                </section>
+                <section className="surface-card service-list-card">
+                  <div className="form-card-heading list-heading"><div><h2>Equipe cadastrada</h2><p>{professionals.length} profissional(is) encontrado(s)</p></div><button className="secondary-button" onClick={() => void loadProfessionals()} disabled={professionalsLoading}>Atualizar</button></div>
+                  {professionalsLoading ? <div className="list-empty">Carregando profissionais...</div> : professionals.length === 0 ? <div className="list-empty"><span className="empty-state-icon">♙</span><strong>Nenhum profissional cadastrado</strong><p>Adicione somente os profissionais confirmados pela coordenação.</p></div> : (
+                    <div className="service-table-wrap"><table className="service-table"><thead><tr><th>Profissional</th><th>Status</th><th>Ações</th></tr></thead><tbody>{professionals.map((professional) => <tr key={professional.id}><td><strong>{professional.name}</strong></td><td><span className={professional.active ? "service-status active" : "service-status inactive"}>{professional.active ? "Ativo" : "Inativo"}</span></td><td><div className="table-actions"><button onClick={() => { setEditingProfessionalId(professional.id); setProfessionalName(professional.name); setProfessionalMessage(""); setProfessionalError(""); }}>Editar</button><button onClick={() => void toggleProfessional(professional)}>{professional.active ? "Desativar" : "Ativar"}</button></div></td></tr>)}</tbody></table></div>
                   )}
                 </section>
               </div>
