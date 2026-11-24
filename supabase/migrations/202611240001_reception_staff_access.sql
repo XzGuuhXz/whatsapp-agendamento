@@ -52,3 +52,33 @@ CREATE POLICY staff_manage_services
 
 -- Nenhuma permissão é concedida à chave anon para criar ou alterar serviços.
 REVOKE INSERT, UPDATE, DELETE ON TABLE public.services FROM anon;
+
+-- O cadastro de profissionais também é restrito a funcionários ativos.
+ALTER TABLE public.professionals ENABLE ROW LEVEL SECURITY;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.professionals TO authenticated;
+
+DROP POLICY IF EXISTS staff_manage_professionals ON public.professionals;
+CREATE POLICY staff_manage_professionals
+  ON public.professionals
+  FOR ALL
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1
+      FROM public.staff_profiles sp
+      WHERE sp.user_id = (SELECT auth.uid())
+        AND sp.active = true
+        AND sp.role IN ('admin', 'recepcao')
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1
+      FROM public.staff_profiles sp
+      WHERE sp.user_id = (SELECT auth.uid())
+        AND sp.active = true
+        AND sp.role IN ('admin', 'recepcao')
+    )
+  );
+
+REVOKE INSERT, UPDATE, DELETE ON TABLE public.professionals FROM anon;
