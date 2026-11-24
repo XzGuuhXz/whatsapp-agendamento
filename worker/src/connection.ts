@@ -57,7 +57,10 @@ export async function connectBaileys(): Promise<WASocket> {
 
     for (const message of messages) {
       try {
-        await handleIncoming(message);
+        await handleIncoming(
+          message,
+          (lid) => socket.signalRepository.lidMapping.getPNForLID(lid),
+        );
       } catch (error) {
         console.error("Falha ao processar mensagem recebida:", error);
       }
