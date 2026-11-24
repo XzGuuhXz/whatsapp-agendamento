@@ -43,16 +43,16 @@ jobs:
 
           config = Path("supabase/config.toml")
           content = config.read_text()
-          section = re.search(r"(?ms)^\\[db\\.migrations\\]\\s*$.*?(?=^\\[|\\Z)", content)
+          section = re.search(r"(?ms)^\[db\.migrations\]\s*$.*?(?=^\[|\Z)", content)
           if section:
               block = section.group(0)
-              if re.search(r"(?m)^enabled\\s*=", block):
-                  block = re.sub(r"(?m)^enabled\\s*=.*$", "enabled = false", block)
+              if re.search(r"(?m)^enabled\s*=", block):
+                  block = re.sub(r"(?m)^enabled\s*=.*$", "enabled = false", block)
               else:
-                  block += "\\nenabled = false\\n"
+                  block += "\nenabled = false\n"
               content = content[:section.start()] + block + content[section.end():]
           else:
-              content += "\\n[db.migrations]\\nenabled = false\\n"
+              content += "\n[db.migrations]\nenabled = false\n"
           config.write_text(content)
           PY
       - name: Start local Supabase without applying migrations
