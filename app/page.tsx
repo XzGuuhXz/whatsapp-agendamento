@@ -351,6 +351,7 @@ export default function Home() {
           ))}
           <a className="nav-link" href="/agenda"><span className="nav-icon" aria-hidden="true">▣</span>Agenda</a>
           <a className="nav-link" href="/horarios"><span className="nav-icon" aria-hidden="true">◷</span>Horários</a>
+          <a className="nav-link" href="/vinculos"><span className="nav-icon" aria-hidden="true">⇄</span>Vínculos</a>
         </nav>
         <div className="sidebar-bottom">
           <div className="help-card"><span className="help-icon">i</span><strong>Acesso protegido</strong><p>Seus dados são exibidos conforme as permissões da sua conta.</p></div>
