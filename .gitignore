@@ -45,3 +45,8 @@ banco.txt
 
 
 .test-build/
+
+# Supabase local
+/supabase/.branches/
+/supabase/.temp/
+/supabase/config.toml
