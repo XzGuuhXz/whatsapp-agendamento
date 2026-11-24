@@ -21,3 +21,8 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run build
       - run: npm run test:http
+      - name: Validate Baileys worker
+        working-directory: worker
+        run: |
+          npm install --no-audit --no-fund
+          npm run typecheck
