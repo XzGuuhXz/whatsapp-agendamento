@@ -88,3 +88,6 @@ A agenda exibe nome do paciente, serviço, profissional, horário e status. Não
 6. Tente abrir as rotas sem autenticação e confirme que o acesso é bloqueado.
 
 Não foi aplicado nenhum seed de serviços, profissionais ou pacientes. O banco de produção permanece sem alterações por esta implementação.
+
+
+Se a tabela `business_hours` estiver vazia, a tela de horários apresenta todos os dias desativados. Isso é intencional: nenhum expediente deve ser presumido. A coordenação precisa confirmar e habilitar os dias e horários corretos antes de liberar agendamentos.
