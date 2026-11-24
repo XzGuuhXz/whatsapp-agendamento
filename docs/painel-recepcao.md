@@ -91,3 +91,20 @@ Não foi aplicado nenhum seed de serviços, profissionais ou pacientes. O banco 
 
 
 Se a tabela `business_hours` estiver vazia, a tela de horários apresenta todos os dias desativados. Isso é intencional: nenhum expediente deve ser presumido. A coordenação precisa confirmar e habilitar os dias e horários corretos antes de liberar agendamentos.
+
+
+## Vínculo entre serviços e profissionais
+
+A branch `feat/service-professional-links` adiciona a rota protegida `/vinculos` e a migration `202611240003_service_professional_links.sql`.
+
+A tabela `service_professionals` registra explicitamente quais profissionais podem atender cada serviço. O chatbot passa a listar somente profissionais vinculados ao serviço escolhido, e a função de disponibilidade também valida esse vínculo antes de oferecer horários.
+
+A migration não cria vínculos automaticamente. A equipe deve cadastrar os serviços e profissionais reais e configurar cada relação conforme orientação da coordenação. Sem vínculo, o serviço não oferecerá horários pelo chatbot.
+
+Ordem das migrations do painel:
+
+1. `202611240001_reception_staff_access.sql`
+2. `202611240002_reception_agenda_access.sql`
+3. `202611240003_service_professional_links.sql`
+
+A migration 003 ainda não foi aplicada ao Supabase remoto.
