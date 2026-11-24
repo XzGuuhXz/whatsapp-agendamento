@@ -14,8 +14,8 @@ export async function handleIncoming(message: WAMessage): Promise<void> {
   const id = message.key.id;
   if (!jid || !id) return;
 
-  // O schema atual do chatbot trabalha com telefone em dígitos. JIDs LID,
-  // grupos, canais e status não são convertidos por suposição.
+  // O schema atual trabalha com telefones em dígitos. Não convertemos LIDs,
+  // grupos, canais ou status por suposição.
   if (!jid.endsWith("@s.whatsapp.net")) {
     if (jid.endsWith("@lid")) {
       console.warn("Mensagem LID ignorada: mapeamento de identidade ainda não configurado.");
@@ -23,7 +23,7 @@ export async function handleIncoming(message: WAMessage): Promise<void> {
     return;
   }
 
-  const phone = jid.slice(0, -"@s.whatsapp.net".length);
+  const phone = jid.slice(0, jid.length - "@s.whatsapp.net".length);
   if (!/^\d{8,15}$/.test(phone)) return;
 
   const text = getText(message);
