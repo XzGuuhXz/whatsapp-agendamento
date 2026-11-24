@@ -393,3 +393,15 @@ button:disabled { cursor: not-allowed; opacity: .6; }
   .hours-state { text-align: left; }
   .agenda-header { align-items: center; }
 }
+
+/* Relação entre serviços e profissionais */
+.links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 16px; margin-top: 18px; }
+.link-card { border: 1px solid #e8edef; border-radius: 10px; padding: 16px; background: #fff; min-width: 0; }
+.link-card-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding-bottom: 13px; border-bottom: 1px solid #edf0f2; }
+.link-card-heading h3 { margin: 0 0 8px; color: #34424e; font-size: 14px; }
+.link-card-heading small { color: #8994a0; font-size: 10px; white-space: nowrap; }
+.link-warning { margin: 12px 0 0; color: #9a6a24; font-size: 11px; }
+.link-professionals { display: grid; gap: 9px; padding-top: 13px; }
+.link-professional { display: flex; align-items: center; gap: 9px; color: #596673; font-size: 12px; cursor: pointer; }
+.link-professional input { accent-color: var(--teal); width: 15px; height: 15px; }
+.link-professional small { margin-left: auto; color: #9aa4ad; font-size: 10px; }
