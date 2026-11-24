@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase/client";
 
 type BusinessHour = { id?: string; day_of_week: number; opens_at: string; closes_at: string; active: boolean };
 const days = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
-const defaults = (): BusinessHour[] => days.map((_, day_of_week) => ({ day_of_week, opens_at: "08:00", closes_at: "17:00", active: day_of_week >= 1 && day_of_week <= 5 }));
+const defaults = (): BusinessHour[] => days.map((_, day_of_week) => ({ day_of_week, opens_at: "08:00", closes_at: "17:00", active: false }));
 
 export default function HoursPage() {
   const [authorized, setAuthorized] = useState(false);
