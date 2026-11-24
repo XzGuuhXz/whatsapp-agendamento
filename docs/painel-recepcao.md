@@ -58,3 +58,33 @@ A chave `SUPABASE_SERVICE_ROLE_KEY` não é usada no navegador e não deve receb
 - Esta etapa ainda não expõe dados de pacientes ou agendamentos no painel.
 - O painel carrega os catálogos após confirmar o perfil do funcionário; os módulos clínicos permanecem bloqueados até a próxima etapa.
 - Não foi feito deploy.
+
+
+## Módulos de agenda e expediente
+
+A branch `feat/agenda-recepcao` adiciona as rotas protegidas:
+
+- `/agenda`: consulta os agendamentos por dia e permite atualizar somente o status.
+- `/horarios`: configura os horários semanais usados pelo mecanismo de disponibilidade do chatbot.
+
+Antes de usar essas telas no Supabase remoto, aplique as migrations nesta ordem, caso ainda não estejam registradas:
+
+1. `202611240001_reception_staff_access.sql`
+2. `202611240002_reception_agenda_access.sql`
+
+A segunda migration concede leitura dos agendamentos e dos nomes dos clientes somente a funcionários ativos; permite atualizar apenas a coluna `status` dos agendamentos; e permite gerenciar `business_hours` por funcionários ativos. O papel `anon` não recebe acesso às tabelas privadas.
+
+O expediente semanal é global para o estabelecimento e usa `America/Campo_Grande`. A tabela atual não oferece pausas no meio do dia nem horários individuais por profissional. Esses recursos exigem uma evolução posterior do modelo e da função de disponibilidade.
+
+A agenda exibe nome do paciente, serviço, profissional, horário e status. Não exibe telefone nem observações clínicas. O acesso continua protegido por autenticação e RLS. Use apenas contas de funcionários autorizados e evite dados reais em testes.
+
+## Testes das telas
+
+1. Entre com uma conta de funcionário ativa.
+2. Abra `/horarios`, configure um expediente de teste e salve.
+3. Confira no Table Editor se existem no máximo sete registros, um por dia da semana.
+4. Abra `/agenda` e escolha uma data com agendamento de teste.
+5. Atualize o status e confirme a alteração no banco.
+6. Tente abrir as rotas sem autenticação e confirme que o acesso é bloqueado.
+
+Não foi aplicado nenhum seed de serviços, profissionais ou pacientes. O banco de produção permanece sem alterações por esta implementação.
