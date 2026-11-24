@@ -1,6 +1,6 @@
 # WhatsApp Agendamento
 
-Chatbot de agendamento em português com Next.js, TypeScript, Supabase e WhatsApp Cloud API da Meta.
+Chatbot de agendamento em português com Next.js, TypeScript e Supabase. Esta branch permite testar o transporte Baileys localmente e mantém a integração WhatsApp Cloud API da Meta como alternativa.
 
 ## O que está implementado
 
@@ -13,6 +13,7 @@ Chatbot de agendamento em português com Next.js, TypeScript, Supabase e WhatsAp
 - Sessões por telefone, reinício após 30 minutos e comando `menu` a qualquer momento.
 - Transação por mensagem, bloqueio por telefone e deduplicação por ID do WhatsApp.
 - Fila persistente de respostas com tentativas, lease de envio e registro de mensagens enviadas.
+- Worker Baileys separado do Next.js para testes locais, reutilizando a mesma fila do Supabase.
 
 ## Atualizar e executar
 
@@ -21,17 +22,27 @@ Requer Node.js 22 ou superior.
 ```bash
 cd ~/whatsapp-agendamento
 git fetch origin
-git switch feat/whatsapp-supabase-integration
+git switch feat/baileys-vps
 npm ci
+npm run worker:install
 cp .env.example .env.local
 ```
 
-Se você já tem `.env.local`, preserve-o e acrescente apenas as variáveis novas do exemplo.
-Preencha as credenciais localmente. Em seguida:
+Se você já tem `.env.local`, preserve-o e acrescente apenas as variáveis novas do exemplo. Para testar o Baileys, mantenha `WHATSAPP_TRANSPORT=baileys` e preencha as credenciais do Supabase localmente. Configure também `worker/.env` copiando `worker/.env.example` e preenchendo a mesma URL e chave `SUPABASE_SERVICE_ROLE_KEY`.
+
+Abra dois terminais na raiz do repositório. No primeiro, inicie o worker e faça o pareamento pelo QR Code:
+
+```bash
+npm run worker:start
+```
+
+No segundo, inicie a aplicação:
 
 ```bash
 npm run dev
 ```
+
+A aplicação ficará em `http://localhost:3000`. Envie uma mensagem de texto para o WhatsApp conectado usando um número de teste autorizado. O guia completo está em [`worker/README.md`](worker/README.md).
 
 Para produção: `npm run build` e `npm start`, ou publique em uma hospedagem compatível com Next.js.
 Configure todas as variáveis também nessa hospedagem. Uma URL HTTPS pública é necessária para o webhook.
@@ -63,7 +74,7 @@ Não há modo que desative a verificação de assinatura.
 
 ## Supabase
 
-A integração usa o projeto existente `dylipirsdywzitppzjjh`. A migração de integração deste repositório **já foi aplicada nesse projeto** durante a implementação; não a execute novamente nele.
+A integração usa o projeto existente `dylipirsdywzitppzjjh`. O worker Baileys depende da tabela `chatbot_outbox` e das funções `chatbot_receive`, `chatbot_claim_reply` e `chatbot_finish_reply`, criadas por `supabase/migrations/202611040001_chatbot_integration.sql`. **Confirme no painel do Supabase se essa migração já está aplicada.** Se não estiver, aplique-a uma única vez, somente após confirmar que as tabelas-base necessárias existem. Não execute novamente se já estiver aplicada. O worker não altera o banco automaticamente.
 
 Os arquivos em `supabase/migrations/` documentam os ajustes de acesso e a integração. A migração de integração requer as oito tabelas originais, a unicidade de `conversation_sessions.phone` e o acesso de servidor já configurados. Não é um instalador completo para um banco vazio.
 
@@ -111,4 +122,4 @@ Teste real após configurar: envie `oi`, percorra um agendamento, consulte, rema
 
 ## Fora desta entrega
 
-Painel administrativo, lembretes por template, integração com atendente humano e relatórios. A conexão real com a Meta depende das credenciais, do cadastro do número e da publicação do webhook.
+Painel administrativo, lembretes por template, integração com atendente humano e relatórios. No worker Baileys, o processamento está limitado a texto em chats individuais com JID `@s.whatsapp.net`; LID, mídia e mensagens interativas ainda não são suportados. Para uma instalação de VPS, consulte `worker/README.md` e `worker/whatsapp-worker.service.example`.
