@@ -24,7 +24,7 @@ jobs:
       - name: Validate Baileys worker
         working-directory: worker
         run: |
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           npm run typecheck
 
   database:
