@@ -1,18 +1,33 @@
 -- Executar no SQL Editor como postgres: os dados são descartados por ROLLBACK.
 BEGIN;
 DO $$
-DECLARE s uuid; p uuid; a uuid; session_id uuid; answer text; target_date date;
+DECLARE s uuid; p uuid; p_unlinked uuid; a uuid; target_date date; target_dow integer;
  test_phone constant text := '5500000000001'; i integer:=0; reply public.chatbot_outbox%ROWTYPE;
 BEGIN
  INSERT INTO public.services(name,duration_minutes,price) VALUES('ZZZ teste temporário',30,50) RETURNING id INTO s;
- INSERT INTO public.professionals(name) VALUES('ZZZ teste temporário') RETURNING id INTO p;
+ INSERT INTO public.professionals(name) VALUES('ZZZ teste temporário vinculado') RETURNING id INTO p;
+ INSERT INTO public.professionals(name) VALUES('ZZZ teste sem vínculo') RETURNING id INTO p_unlinked;
  INSERT INTO public.service_professionals(service_id,professional_id) VALUES(s,p);
  target_date := (now() AT TIME ZONE 'America/Campo_Grande')::date+1;
  WHILE extract(dow FROM target_date)=0 LOOP target_date:=target_date+1; END LOOP;
+ target_dow := extract(dow FROM target_date)::integer;
+ -- O teste configura expediente temporário no próprio dia escolhido; o ROLLBACK restaura qualquer valor anterior.
+ INSERT INTO public.business_hours(day_of_week,opens_at,closes_at,active)
+ VALUES(target_dow,'00:00'::time,'23:59'::time,true)
+ ON CONFLICT(day_of_week) DO UPDATE SET opens_at=excluded.opens_at,closes_at=excluded.closes_at,active=true;
  PERFORM public.chatbot_receive('test-0',test_phone,'oi','Teste','America/Campo_Grande');
  PERFORM public.chatbot_receive('test-0',test_phone,'oi','Teste','America/Campo_Grande');
  IF (SELECT count(*) FROM public.messages WHERE whatsapp_message_id='test-0')<>1 OR (SELECT count(*) FROM public.chatbot_outbox WHERE incoming_id='test-0')<>1 THEN RAISE EXCEPTION 'Deduplication failed';END IF;
  PERFORM public.chatbot_receive('test-1',test_phone,'1','Teste','America/Campo_Grande');
+ -- O catálogo de profissionais deve conter somente quem está vinculado ao serviço.
+ IF (SELECT count(*) FROM public.conversation_sessions cs, jsonb_array_elements(cs.context->'choices') c(v)
+     WHERE cs.phone=test_phone AND v->>'id'=p_unlinked::text)<>0 THEN
+   RAISE EXCEPTION 'Unlinked professional was offered for the service';
+ END IF;
+ IF (SELECT count(*) FROM public.conversation_sessions cs, jsonb_array_elements(cs.context->'choices') c(v)
+     WHERE cs.phone=test_phone AND v->>'id'=p::text)<>1 THEN
+   RAISE EXCEPTION 'Linked professional was not offered';
+ END IF;
  -- Usar a posição do serviço/profissional temporário, sem depender de um catálogo vazio.
  SELECT ordinality::integer INTO i FROM public.conversation_sessions cs, jsonb_array_elements(cs.context->'choices') WITH ORDINALITY c(v,ordinality) WHERE cs.phone=test_phone AND v->>'id'=s::text;
  PERFORM public.chatbot_receive('test-2',test_phone,i::text,'Teste','America/Campo_Grande');
@@ -46,5 +61,5 @@ BEGIN
  IF NOT EXISTS(SELECT 1 FROM public.messages WHERE whatsapp_message_id='wamid.test-outgoing' AND direction='outgoing') THEN RAISE EXCEPTION 'Outbox log failed';END IF;
  IF has_function_privilege('anon','public.chatbot_receive(text,text,text,text,text)','EXECUTE') OR has_table_privilege('anon','public.chatbot_outbox','SELECT') THEN RAISE EXCEPTION 'Public access to private operations';END IF;
 END $$;
-SELECT 'PASS: booking, date validation, rescheduling, cancellation, deduplication, outbox lease, message logging, permissions' AS tests;
+SELECT 'PASS: service-professional filtering, booking, date validation, rescheduling, cancellation, deduplication, outbox lease, message logging, permissions' AS tests;
 ROLLBACK;
