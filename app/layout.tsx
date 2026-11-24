@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WhatsApp Agendamento",
-  description: "Aplicação de agendamentos integrada ao WhatsApp.",
+  title: "SAE Agenda | Painel da recepção",
+  description: "Painel interno para organização dos agendamentos do SAE.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
