@@ -19,6 +19,9 @@ BEGIN
  PERFORM public.chatbot_receive('test-0',test_phone,'oi','Teste','America/Campo_Grande');
  IF (SELECT count(*) FROM public.messages WHERE whatsapp_message_id='test-0')<>1 OR (SELECT count(*) FROM public.chatbot_outbox WHERE incoming_id='test-0')<>1 THEN RAISE EXCEPTION 'Deduplication failed';END IF;
  PERFORM public.chatbot_receive('test-1',test_phone,'1','Teste','America/Campo_Grande');
+ -- Usar a posição do serviço/profissional temporário, sem depender de um catálogo vazio.
+ SELECT ordinality::integer INTO i FROM public.conversation_sessions cs, jsonb_array_elements(cs.context->'choices') WITH ORDINALITY c(v,ordinality) WHERE cs.phone=test_phone AND v->>'id'=s::text;
+ PERFORM public.chatbot_receive('test-2',test_phone,i::text,'Teste','America/Campo_Grande');
  -- O catálogo de profissionais deve conter somente quem está vinculado ao serviço.
  IF (SELECT count(*) FROM public.conversation_sessions cs, jsonb_array_elements(cs.context->'choices') c(v)
      WHERE cs.phone=test_phone AND v->>'id'=p_unlinked::text)<>0 THEN
@@ -28,9 +31,6 @@ BEGIN
      WHERE cs.phone=test_phone AND v->>'id'=p::text)<>1 THEN
    RAISE EXCEPTION 'Linked professional was not offered';
  END IF;
- -- Usar a posição do serviço/profissional temporário, sem depender de um catálogo vazio.
- SELECT ordinality::integer INTO i FROM public.conversation_sessions cs, jsonb_array_elements(cs.context->'choices') WITH ORDINALITY c(v,ordinality) WHERE cs.phone=test_phone AND v->>'id'=s::text;
- PERFORM public.chatbot_receive('test-2',test_phone,i::text,'Teste','America/Campo_Grande');
  SELECT ordinality::integer INTO i FROM public.conversation_sessions cs, jsonb_array_elements(cs.context->'choices') WITH ORDINALITY c(v,ordinality) WHERE cs.phone=test_phone AND v->>'id'=p::text;
  PERFORM public.chatbot_receive('test-3',test_phone,i::text,'Teste','America/Campo_Grande');
  PERFORM public.chatbot_receive('test-4',test_phone,'31/02/2099','Teste','America/Campo_Grande');
