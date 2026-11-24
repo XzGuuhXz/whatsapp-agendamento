@@ -8,7 +8,7 @@ No projeto Supabase correto, abra **SQL Editor** e execute o arquivo:
 
 `supabase/migrations/202611240001_reception_staff_access.sql`
 
-A migration cria `public.staff_profiles`, libera a leitura do próprio perfil e permite que funcionários ativos consultem e gerenciem `public.services`. Ela não cadastra serviços, funcionários nem altera agendamentos.
+A migration cria `public.staff_profiles`, libera a leitura do próprio perfil e permite que funcionários ativos consultem e gerenciem `public.services` e `public.professionals`. Ela não cadastra serviços, funcionários nem altera agendamentos.
 
 ## 2. Criar a primeira conta de funcionário
 
@@ -45,6 +45,7 @@ A chave `SUPABASE_SERVICE_ROLE_KEY` não é usada no navegador e não deve receb
 - Entrar com uma conta que tenha perfil ativo.
 - Entrar com uma conta Auth sem linha em `staff_profiles`: deve permanecer sem acesso ao painel.
 - Cadastrar um serviço de teste, editar duração/nome e desativá-lo.
+- Cadastrar um profissional de teste, editar o nome e desativá-lo.
 - Sair e entrar novamente para confirmar a persistência.
 - Tentar inserir/alterar `services` com uma sessão autenticada sem perfil: a operação deve ser negada por RLS.
 - Confirmar que a chave anon não consegue inserir, atualizar ou excluir serviços.
