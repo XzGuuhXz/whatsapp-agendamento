@@ -6,6 +6,7 @@ DECLARE s uuid; p uuid; a uuid; session_id uuid; answer text; target_date date;
 BEGIN
  INSERT INTO public.services(name,duration_minutes,price) VALUES('ZZZ teste temporário',30,50) RETURNING id INTO s;
  INSERT INTO public.professionals(name) VALUES('ZZZ teste temporário') RETURNING id INTO p;
+ INSERT INTO public.service_professionals(service_id,professional_id) VALUES(s,p);
  target_date := (now() AT TIME ZONE 'America/Campo_Grande')::date+1;
  WHILE extract(dow FROM target_date)=0 LOOP target_date:=target_date+1; END LOOP;
  PERFORM public.chatbot_receive('test-0',test_phone,'oi','Teste','America/Campo_Grande');
