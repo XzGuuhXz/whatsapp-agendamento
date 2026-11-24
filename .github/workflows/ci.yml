@@ -36,7 +36,8 @@ jobs:
           version: latest
       - name: Initialize local Supabase configuration
         run: |
-          supabase init
+          supabase init --force
+          test -f supabase/config.toml
           python - <<'PY'
           from pathlib import Path
           import re
