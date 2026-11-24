@@ -56,7 +56,7 @@ CREATE TABLE public.blocked_times (
 CREATE TABLE public.conversation_sessions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   client_id uuid REFERENCES public.clients(id),
-  phone text NOT NULL UNIQUE,
+  phone text NOT NULL,
   state text NOT NULL DEFAULT 'idle',
   context jsonb NOT NULL DEFAULT '{}'::jsonb,
   last_message_at timestamptz,
