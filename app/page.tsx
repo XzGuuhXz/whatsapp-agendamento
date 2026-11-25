@@ -2,6 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
+import DashboardOverview from "@/components/dashboard/DashboardOverview";
 
 type StaffProfile = {
   user_id: string;
@@ -32,6 +33,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<StaffProfile | null>(null);
   const [view, setView] = useState<View>("overview");
+  const [commandOpen, setCommandOpen] = useState(false);
+  const [commandQuery, setCommandQuery] = useState("");
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
@@ -159,6 +163,22 @@ export default function Home() {
     }, 0);
     return () => window.clearTimeout(timer);
   }, [profile, loadServices, loadProfessionals]);
+
+  useEffect(() => {
+    function handleKeyboard(event: KeyboardEvent) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setCommandOpen((open) => !open);
+        setNotificationsOpen(false);
+      }
+      if (event.key === "Escape") {
+        setCommandOpen(false);
+        setNotificationsOpen(false);
+      }
+    }
+    window.addEventListener("keydown", handleKeyboard);
+    return () => window.removeEventListener("keydown", handleKeyboard);
+  }, []);
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -302,6 +322,25 @@ export default function Home() {
     }
   }
 
+  const commandItems = [
+    { label: "Visão geral", description: "Voltar ao resumo do SAE", keywords: "inicio dashboard resumo", action: () => setView("overview") },
+    { label: "Serviços", description: "Gerenciar o catálogo de atendimentos", keywords: "catalogo procedimentos", action: () => setView("services") },
+    { label: "Profissionais", description: "Gerenciar a equipe cadastrada", keywords: "equipe pessoas", action: () => setView("professionals") },
+    { label: "Agenda diária", description: "Consultar e atualizar agendamentos", keywords: "pacientes atendimentos", action: () => window.location.assign("/agenda") },
+    { label: "Horários", description: "Configurar o expediente semanal", keywords: "funcionamento abertura fechamento", action: () => window.location.assign("/horarios") },
+    { label: "Vínculos", description: "Associar serviços e profissionais", keywords: "relacionamentos", action: () => window.location.assign("/vinculos") },
+  ];
+  const filteredCommands = commandItems.filter((item) =>
+    (item.label + " " + item.description + " " + item.keywords).toLocaleLowerCase("pt-BR").includes(commandQuery.trim().toLocaleLowerCase("pt-BR"))
+  );
+  const notificationItems: string[] = [];
+  if (!servicesLoading && services.filter((service) => service.active).length === 0) {
+    notificationItems.push("Nenhum serviço ativo está disponível no catálogo.");
+  }
+  if (!professionalsLoading && professionals.filter((professional) => professional.active).length === 0) {
+    notificationItems.push("Nenhum profissional ativo está cadastrado.");
+  }
+
   if (loading) {
     return <main className="auth-screen"><div className="auth-card"><span className="brand-mark">S</span><p>Verificando acesso...</p></div></main>;
   }
@@ -336,7 +375,7 @@ export default function Home() {
   }
 
   return (
-    <main className="dashboard-shell">
+    <main className="sae-glass-shell">
       <aside className="sidebar">
         <a className="brand" href="#inicio" aria-label="SAE Agenda - início">
           <span className="brand-mark">S</span>
@@ -359,10 +398,47 @@ export default function Home() {
         </div>
       </aside>
 
+
+      {commandOpen && (
+        <div className="sae-command-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) { setCommandOpen(false); setCommandQuery(""); } }}>
+          <section className="sae-command-dialog" role="dialog" aria-modal="true" aria-labelledby="sae-command-title">
+            <div className="sae-command-search">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6" fill="none" stroke="currentColor" strokeWidth="1.7" /><path d="m16 16 4.2 4.2" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
+              <input id="sae-command-title" type="search" placeholder="O que você deseja abrir?" value={commandQuery} onChange={(event) => setCommandQuery(event.target.value)} />
+              <kbd>ESC</kbd>
+            </div>
+            <div className="sae-command-results">
+              {filteredCommands.length === 0 ? <div className="sae-command-no-results">Nenhuma ação encontrada.</div> : filteredCommands.map((item) => (
+                <button className="sae-command-result" type="button" key={item.label} onClick={() => { setCommandOpen(false); setCommandQuery(""); item.action(); }}>
+                  <span><strong>{item.label}</strong><small>{item.description}</small></span><span>↗</span>
+                </button>
+              ))}
+            </div>
+            <div className="sae-command-footer">Pressione Ctrl K para abrir a busca · Esc para fechar</div>
+          </section>
+        </div>
+      )}
+
       <section className="main-area" id="inicio">
         <header className="topbar">
-          <div className="breadcrumb">SAE <span>/</span> {view === "overview" ? "Visão geral" : "Serviços"}</div>
+          <div className="breadcrumb">SAE <span>/</span> {view === "overview" ? "Visão geral" : view === "services" ? "Serviços" : "Profissionais"}</div>
           <div className="topbar-right">
+            <button className="sae-command-button" type="button" onClick={() => { setCommandOpen(true); setNotificationsOpen(false); }} aria-label="Abrir busca rápida">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6" fill="none" stroke="currentColor" strokeWidth="1.7" /><path d="m16 16 4.2 4.2" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
+              <span>Buscar ações</span><kbd>Ctrl K</kbd>
+            </button>
+            <div className="sae-notification-wrap">
+              <button className="sae-icon-button" type="button" aria-label="Notificações" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen((open) => !open)}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-2.5 7-2.5 8.5h17C20.5 16 18 16 18 9ZM10 21h4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                {notificationItems.length > 0 && <i className="sae-notification-dot" />}
+              </button>
+              {notificationsOpen && (
+                <div className="sae-notification-panel">
+                  <h3>Central de avisos</h3>
+                  {notificationItems.length === 0 ? <p className="sae-notification-empty">Nenhum aviso de cadastro no momento.</p> : notificationItems.map((item) => <div className="sae-notification-item" key={item}><i />{item}</div>)}
+                </div>
+              )}
+            </div>
             <span className="staff-name">{profile.display_name} <small>{profile.role === "admin" ? "Administrador" : "Recepção"}</small></span>
             <button className="logout-button" onClick={handleLogout}>Sair</button>
           </div>
@@ -370,19 +446,11 @@ export default function Home() {
 
         <div className="content">
           {view === "overview" ? (
-            <>
-              <div className="welcome-row">
-                <div><div className="eyebrow">CENTRAL DE ATENDIMENTO</div><h1>Visão geral</h1><p className="page-description">Bem-vindo(a), {profile.display_name}. Este é o painel interno do SAE.</p></div>
-                <div className="date-chip"><span aria-hidden="true">◷</span> Agenda do SAE</div>
-              </div>
-              <div className="notice"><span className="notice-icon">i</span><div><strong>Agenda disponível</strong><p>Consulte os atendimentos do dia pelo menu Agenda. Os dados exibidos dependem dos cadastros e horários configurados pela coordenação do SAE.</p></div></div>
-              <section className="stats-grid" aria-label="Resumo da agenda">
-                <article className="stat-card"><div className="stat-top"><span>Serviços ativos</span><span className="stat-icon mint">✳</span></div><div className="stat-value">{services.filter((service) => service.active).length}</div><div className="stat-foot">Abra Serviços para consultar o catálogo</div></article>
-                <article className="stat-card"><div className="stat-top"><span>Profissionais ativos</span><span className="stat-icon blue">♙</span></div><div className="stat-value">{professionals.filter((professional) => professional.active).length}</div><div className="stat-foot">Equipe cadastrada no painel</div></article>
-              </section>
-              <section className="panel-section"><div className="section-heading"><div><h2>Acesso rápido</h2><p>Atalhos para as rotinas da recepção.</p></div></div><div className="surface-card"><div className="next-steps"><a href="/agenda"><span>01</span><strong>Agenda diária</strong><small>Consultar e atualizar atendimentos</small></a><a href="/horarios"><span>02</span><strong>Horários</strong><small>Consultar o expediente configurado</small></a><a href="/vinculos"><span>03</span><strong>Vínculos</strong><small>Associar serviços e profissionais</small></a></div></div></section>
-            </>
-          ) : view === "services" ? (
+            <DashboardOverview
+              displayName={profile.display_name}
+              activeServices={services.filter((service) => service.active).length}
+              activeProfessionals={professionals.filter((professional) => professional.active).length}
+            ) : view === "services" ? (
             <>
               <div className="welcome-row"><div><div className="eyebrow">CONFIGURAÇÃO DO ATENDIMENTO</div><h1>Serviços</h1><p className="page-description">Cadastre os serviços que poderão ser selecionados no fluxo de agendamento.</p></div><span className="section-tag">Catálogo do SAE</span></div>
               <div className="notice"><span className="notice-icon">i</span><div><strong>Cadastre somente serviços confirmados pela coordenação</strong><p>Os serviços cadastrados e ativos poderão aparecer como opções no chatbot. Não inclua informações sensíveis de pacientes.</p></div></div>
