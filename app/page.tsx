@@ -406,7 +406,7 @@ export default function Home() {
           <section className="sae-command-dialog" role="dialog" aria-modal="true" aria-labelledby="sae-command-title">
             <div className="sae-command-search">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6" fill="none" stroke="currentColor" strokeWidth="1.7" /><path d="m16 16 4.2 4.2" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
-              <input id="sae-command-title" type="search" placeholder="O que você deseja abrir?" value={commandQuery} onChange={(event) => setCommandQuery(event.target.value)} />
+              <input id="sae-command-title" type="search" placeholder="O que você deseja abrir?" autoFocus value={commandQuery} onChange={(event) => setCommandQuery(event.target.value)} />
               <kbd>ESC</kbd>
             </div>
             <div className="sae-command-results">
