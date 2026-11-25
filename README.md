@@ -1,6 +1,6 @@
 # WhatsApp Agendamento
 
-Chatbot de agendamento em português com Next.js, TypeScript, Supabase e WhatsApp Cloud API da Meta.
+Sistema de agendamento do SAE por WhatsApp, com painel interno de recepção, desenvolvido em Next.js, TypeScript e Supabase. A branch `feat/sae-simple-admin` reúne o chatbot, os transportes Meta/Baileys e os módulos administrativos.
 
 ## O que está implementado
 
@@ -13,6 +13,7 @@ Chatbot de agendamento em português com Next.js, TypeScript, Supabase e WhatsAp
 - Sessões por telefone, reinício após 30 minutos e comando `menu` a qualquer momento.
 - Transação por mensagem, bloqueio por telefone e deduplicação por ID do WhatsApp.
 - Fila persistente de respostas com tentativas, lease de envio e registro de mensagens enviadas.
+- Worker Baileys separado do Next.js para testes locais, reutilizando a mesma fila do Supabase.
 
 ## Atualizar e executar
 
@@ -21,21 +22,31 @@ Requer Node.js 22 ou superior.
 ```bash
 cd ~/whatsapp-agendamento
 git fetch origin
-git switch feat/whatsapp-supabase-integration
+git switch feat/sae-simple-admin
 npm ci
+npm run worker:install
 cp .env.example .env.local
 ```
 
-Se você já tem `.env.local`, preserve-o e acrescente apenas as variáveis novas do exemplo.
-Preencha as credenciais localmente. Em seguida:
+Se você já tem `.env.local`, preserve-o e acrescente apenas as variáveis novas do exemplo. Para testar o Baileys, mantenha `WHATSAPP_TRANSPORT=baileys` e preencha as credenciais do Supabase localmente. Configure também `worker/.env` copiando `worker/.env.example` e preenchendo a mesma URL e chave `SUPABASE_SERVICE_ROLE_KEY`.
+
+Abra dois terminais na raiz do repositório. No primeiro, inicie o worker e faça o pareamento pelo QR Code:
+
+```bash
+npm run worker:start
+```
+
+No segundo, inicie a aplicação:
 
 ```bash
 npm run dev
 ```
 
+A aplicação ficará em `http://localhost:3000`. O painel interno possui autenticação Supabase e as rotas Início, Agenda, Serviços, Profissionais, Vínculos e Horários. O primeiro acesso depende de uma conta Auth associada a um perfil ativo em `staff_profiles`; não existe cadastro público de funcionários. Para testar o chatbot no transporte Baileys, envie uma mensagem de texto usando um número de teste autorizado. O guia do worker está em [`worker/README.md`](worker/README.md).
+
 Para produção: `npm run build` e `npm start`, ou publique em uma hospedagem compatível com Next.js.
 Configure todas as variáveis também nessa hospedagem. Uma URL HTTPS pública é necessária para o webhook.
-O site inicial continua sendo um teste de conexão; o painel administrativo não foi implementado.
+O painel SAE está implementado no código, mas não há publicação de produção confirmada. A validação real do WhatsApp com credenciais do provedor também continua pendente.
 
 ## Entrar na Meta e pegar os dados
 
@@ -63,19 +74,20 @@ Não há modo que desative a verificação de assinatura.
 
 ## Supabase
 
-A integração usa o projeto existente `dylipirsdywzitppzjjh`. A migração de integração deste repositório **já foi aplicada nesse projeto** durante a implementação; não a execute novamente nele.
+A integração usa o projeto Supabase `dylipirsdywzitppzjjh`. O histórico remoto foi consultado em 25/11/2026 e confirma as migrations da integração, recepção, agenda, vínculos, minimização de dados e permissão de relacionamento do paciente. A migration `202611240006_reception_client_join_permission.sql` foi aplicada pelo fluxo de migration e verificada: `authenticated` tem `SELECT(id, name)` em `clients`, sem acesso a `phone`/`email`; `anon` não tem leitura de `clients.id`/`name`, e `authenticated` não lê `appointments.notes`. Não reaplique migrations já registradas. O worker não altera o banco automaticamente.
 
 Os arquivos em `supabase/migrations/` documentam os ajustes de acesso e a integração. A migração de integração requer as oito tabelas originais, a unicidade de `conversation_sessions.phone` e o acesso de servidor já configurados. Não é um instalador completo para um banco vazio.
 
 As funções `chatbot_receive`, `chatbot_claim_reply` e `chatbot_finish_reply` são acessíveis somente ao `service_role`. As tabelas com dados pessoais ficam inacessíveis ao cliente público; o site pode ler somente serviços ativos.
 
-Antes de testar pelo WhatsApp, cadastre no Table Editor:
+Antes de testar pelo WhatsApp, cadastre somente dados confirmados pela coordenação:
 
-- `services`: nome, duração positiva, preço e `active=true`.
+- `services`: nome, duração positiva e `active=true` (o SAE oferece atendimentos gratuitos; o painel não cadastra nem exibe preço).
 - `professionals`: nome e `active=true`.
-- `business_hours`: confirme os horários existentes (segunda a sexta 08h–18h; sábado 08h–12h).
+- `service_professionals`: vínculos entre serviços e profissionais habilitados.
+- `business_hours`: expediente semanal confirmado; não presuma horários padrão.
 
-O fuso padrão é `America/Campo_Grande`; ajuste `BUSINESS_TIMEZONE` ao estabelecimento. Os bloqueios de `blocked_times` afetam todos os profissionais. Atualmente todos os profissionais podem atender todos os serviços; especialidades e agendas individuais exigem uma ampliação do modelo.
+O fuso padrão é `America/Campo_Grande`; ajuste `BUSINESS_TIMEZONE` ao estabelecimento. Os bloqueios de `blocked_times` afetam todos os profissionais. O chatbot oferece apenas profissionais explicitamente vinculados ao serviço escolhido. O expediente ainda é global; pausas e agendas individuais por profissional exigem evolução do modelo.
 
 O banco impede sobreposição para o mesmo profissional. A RPC revalida a disponibilidade na confirmação e preserva a reserva antiga até concluir a remarcação.
 
@@ -111,4 +123,4 @@ Teste real após configurar: envie `oi`, percorra um agendamento, consulte, rema
 
 ## Fora desta entrega
 
-Painel administrativo, lembretes por template, integração com atendente humano e relatórios. A conexão real com a Meta depende das credenciais, do cadastro do número e da publicação do webhook.
+Lembretes por template, transferência para atendimento humano e relatórios ainda não foram implementados. No worker Baileys, o processamento está limitado a texto em chats individuais com JID `@s.whatsapp.net`; LID, mídia e mensagens interativas ainda não são suportados. Para uma instalação de VPS, consulte `worker/README.md` e `worker/whatsapp-worker.service.example`.

@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "test": "tsc -p tsconfig.test.json && node --test .test-build/tests/*.test.js",
-    "test:http": "node tests/run-http.mjs"
+    "test:http": "node tests/run-http.mjs",
+    "worker:install": "npm --prefix worker install",
+    "worker:start": "npm --prefix worker start",
+    "worker:typecheck": "npm --prefix worker run typecheck"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",

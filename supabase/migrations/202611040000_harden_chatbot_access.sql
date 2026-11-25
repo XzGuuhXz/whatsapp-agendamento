@@ -1,5 +1,7 @@
 -- Alterações anteriores já aplicadas no projeto existente; requer as oito tabelas originais.
 CREATE SCHEMA IF NOT EXISTS extensions;
+-- Em instalações locais limpas a extensão ainda não existe; em produção, preserve a instalação existente.
+CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA extensions;
 ALTER EXTENSION btree_gist SET SCHEMA extensions;
 CREATE SCHEMA IF NOT EXISTS private;
 REVOKE ALL ON SCHEMA private FROM PUBLIC, anon, authenticated;

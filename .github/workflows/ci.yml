@@ -21,3 +21,33 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run build
       - run: npm run test:http
+      - name: Validate Baileys worker
+        working-directory: worker
+        run: |
+          npm ci --no-audit --no-fund
+          npm run typecheck
+
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Create local Supabase configuration
+        run: |
+          mkdir -p supabase
+          cat > supabase/config.toml <<'EOF'
+          project_id = "whatsapp-agendamento"
+
+          [db.migrations]
+          enabled = false
+          EOF
+      - name: Start local Supabase without applying migrations
+        run: supabase start -x studio,mailpit,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor
+      - name: Prepare empty database with original schema
+        run: psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f tests/fixtures/base_schema.sql
+      - name: Apply migrations
+        run: supabase migration up --local
+      - name: Run PostgreSQL integration tests
+        run: psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -v ON_ERROR_STOP=1 -f tests/database.sql
