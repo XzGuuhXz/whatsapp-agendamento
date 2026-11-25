@@ -2,7 +2,7 @@
 
 **Projeto:** Chatbot de agendamentos via WhatsApp e painel interno de recepção do SAE  
 **Repositório:** [XzGuuhXz/whatsapp-agendamento](https://github.com/XzGuuhXz/whatsapp-agendamento)  
-**Data de referência:** 24 de novembro de 2026  
+**Data de referência:** 25 de novembro de 2026  
 **Idioma:** Português (Brasil)
 
 ## Objetivo
@@ -24,18 +24,16 @@ Este diretório reúne a documentação técnica e operacional do projeto. Ele r
 | [Histórico Git e branches](./07-historico-git-e-branches.md) | Branches, PRs, commits relevantes e ressalvas de rastreabilidade |
 | [Pendências e decisões](./08-pendencias-e-decisoes.md) | Próximos passos, limitações e decisões em aberto |
 
-## Estado executivo em 24/11/2026
+## Estado executivo em 25/11/2026
 
-- O código contém um fluxo de chatbot de agendamento, integração Supabase, painel de recepção, agenda, expediente e vínculo entre serviços e profissionais.
-- A branch de integração WhatsApp/Supabase contém o processamento transacional, deduplicação e fila de respostas descritos nos documentos.
-- As PRs #1, #2 e #3 aparecem abertas no GitHub na consulta de 24/11/2026. A PR #4 foi mesclada em 24/11/2026.
-- A migration `202611240005_reception_patient_data_minimization.sql` foi aplicada ao Supabase remoto e verificada conforme registro operacional do projeto.
-- O CI da PR #4, execução #112, passou nos checks e no job de banco de dados.
-- O ambiente local foi iniciado com Supabase em Docker e Next.js; as rotas principais responderam HTTP 200.
-- A agenda local foi validada visualmente com nome, serviço, profissional, horário e status.
-- Foi necessário conceder localmente `SELECT (id)` em `public.clients` à role `authenticated` para permitir o relacionamento PostgREST. A concessão mínima foi formalizada na migration 006 da branch `feat/dashboard-liquid-glass`, com teste de privilégio para `authenticated` e `anon`; ainda precisa passar pelo CI e não foi aplicada ao Supabase remoto.
-- A branch `feat/dashboard-liquid-glass` também revisa a visão geral administrativa, os estados de erro, os indicadores, o gráfico responsivo e a busca rápida.
-- **Não há deploy de produção confirmado nesta documentação.**
+- A PR #1 foi mesclada em `main` no commit `e545161a68c8eb91141be261fc6e56044cf7794a`.
+- A branch `feat/sae-simple-admin` reúne o chatbot, worker Baileys, painel de recepção, agenda, expediente, catálogos, vínculos e documentação oficial.
+- O CI #167 da branch atual passou nos jobs de aplicação e banco: testes, lint, typegen, TypeScript, build, HTTP, worker e PostgreSQL.
+- As PRs #2 e #3 continuam abertas como drafts e estão sendo substituídas por uma consolidação única da versão atual do painel.
+- A PR #4 foi mesclada na branch de vínculos e sua correção de privacidade está incorporada à versão atual.
+- As migrations 005 e 006 foram aplicadas ao projeto Supabase remoto. A migration 006 foi registrada em 25/11/2026 e os privilégios por coluna foram verificados via SQL.
+- Os advisors de segurança do Supabase retornaram zero avisos. O advisor de performance mantém índices sem uso observado e um aviso de políticas permissivas múltiplas em `services`, que precisam de avaliação, não de remoção automática.
+- O teste ponta a ponta com credenciais reais do WhatsApp, os cadastros oficiais do SAE e o deploy público ainda não foram confirmados.
 
 ## Como interpretar os estados
 
