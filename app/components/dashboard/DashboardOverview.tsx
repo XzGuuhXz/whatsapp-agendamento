@@ -56,6 +56,10 @@ function relationName<T extends { name: string }>(value: Relation<T>): string {
   return value?.name ?? "Não informado";
 }
 
+function initials(value: string): string {
+  return value.split(" ").filter(Boolean).slice(0, 2).map((part) => part.charAt(0)).join("").toLocaleUpperCase("pt-BR") || "SA";
+}
+
 function statusLabel(status: AppointmentStatus): string {
   const labels: Record<AppointmentStatus, string> = {
     scheduled: "Pendente", confirmed: "Confirmado", completed: "Concluído",
@@ -360,7 +364,7 @@ export default function DashboardOverview({ displayName, activeServices, activeP
                 return (
                   <div className="sae-activity-row" key={item.id}>
                     <div className="sae-activity-date"><strong>{formattedDate}</strong><span>{formattedTime}</span></div>
-                    <div className="sae-activity-main"><strong>{relationName(item.clients)}</strong><span>{relationName(item.services)} <i>·</i> {relationName(item.professionals)}</span></div>
+                    <div className="sae-activity-main"><div className="sae-activity-title"><span className="sae-activity-avatar">{initials(relationName(item.clients))}</span><strong>{relationName(item.clients)}</strong></div><span>{relationName(item.services)} <i>·</i> {relationName(item.professionals)}</span></div>
                     <span className={"sae-status-pill sae-status-" + item.status}>{statusLabel(item.status)}</span>
                   </div>
                 );
