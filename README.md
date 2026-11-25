@@ -29,9 +29,9 @@ npm run worker:install
 cp .env.example .env.local
 ```
 
-Se você já tem `.env.local`, preserve-o e acrescente apenas as variáveis novas do exemplo. O transporte padrão recomendado para operação institucional é `WHATSAPP_TRANSPORT=meta`; preencha as credenciais da Meta descritas abaixo. Para testes locais sem a API oficial, use `WHATSAPP_TRANSPORT=baileys` e configure `worker/.env` copiando `worker/.env.example`, com a URL e a chave `SUPABASE_SERVICE_ROLE_KEY`.
+Se você já tem `.env.local`, preserve-o e acrescente apenas as variáveis novas do exemplo. O transporte principal definido para o SAE é `WHATSAPP_TRANSPORT=baileys`. Configure `worker/.env` copiando `worker/.env.example`, com a URL e a chave `SUPABASE_SERVICE_ROLE_KEY`. A Meta Cloud API permanece no código como alternativa futura, mas não é necessária para executar o Baileys.
 
-O transporte Meta não precisa do worker Baileys: o Next.js recebe o webhook e envia respostas pela Cloud API. Para testar a alternativa Baileys, abra dois terminais na raiz do repositório. No primeiro, inicie o worker e faça o pareamento pelo QR Code:
+Para executar o transporte principal Baileys, abra dois terminais na raiz do repositório. No primeiro, inicie o worker e faça o pareamento pelo QR Code:
 
 ```bash
 npm run worker:start
