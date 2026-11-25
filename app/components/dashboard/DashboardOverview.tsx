@@ -204,17 +204,23 @@ export default function DashboardOverview({ displayName, activeServices, activeP
       value: currentWeek.filter((item) => dateKey(new Date(item.starts_at)) === day).length,
     }));
     const completed = metrics.find((metric) => metric.id === "completed")?.value ?? 0;
-    const completionRate = currentWeek.length ? Math.round((completed / currentWeek.length) * 100) : 0;
+    const eligibleCount = currentWeek.filter((item) =>
+      item.status === "scheduled" || item.status === "confirmed" || item.status === "completed"
+    ).length;
+    const completionRate = eligibleCount ? Math.round((completed / eligibleCount) * 100) : 0;
     const now = lastUpdated?.getTime() ?? 0;
+
+    // Próximos horários incluem o restante do dia atual, não apenas os dias seguintes.
     const upcoming = appointments.filter((item) => {
-      const key = dateKey(new Date(item.starts_at));
-      return key >= tomorrow && key < shiftDay(today, 7);
+      const startsAt = new Date(item.starts_at).getTime();
+      return startsAt >= now && (item.status === "scheduled" || item.status === "confirmed");
     }).sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
+
     const recent = currentWeek.filter((item) => new Date(item.starts_at).getTime() < now)
       .sort((a, b) => new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime());
     const agendaItems = [...upcoming, ...recent].slice(0, 5);
     const todayCount = currentWeek.filter((item) => dateKey(new Date(item.starts_at)) === today).length;
-    return { metrics, chart, currentWeek, completionRate, agendaItems, todayCount, completed };
+    return { metrics, chart, currentWeek, completionRate, agendaItems, todayCount, completed, eligibleCount };
   }, [appointments, today, lastUpdated]);
 
   const chartPoints = useMemo(() => {
@@ -250,7 +256,7 @@ export default function DashboardOverview({ displayName, activeServices, activeP
           <p>Olá, {displayName}. Aqui está o panorama da agenda.</p>
         </div>
         <div className="sae-heading-actions">
-          <span className="sae-live-indicator"><i /> Dados do Supabase</span>
+          <span className={"sae-live-indicator" + (error ? " is-error" : "")}><i />{error ? "Falha na consulta" : lastUpdated ? "Dados atualizados" : "Conectando..."}</span>
           <button className="sae-refresh-button" type="button" onClick={() => void loadAppointments()} disabled={loading}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M5.6 9a7 7 0 0 1 11.8-2L20 12M4 12l2.6 5a7 7 0 0 0 11.8-2" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
             {loading ? "Atualizando" : "Atualizar"}
@@ -267,9 +273,9 @@ export default function DashboardOverview({ displayName, activeServices, activeP
               <span>{metric.label}</span>
               <span className="sae-kpi-icon"><MetricIcon kind={metric.icon} /></span>
             </div>
-            <div className="sae-kpi-value">{loading ? "—" : metric.value.toLocaleString("pt-BR")}</div>
+            <div className="sae-kpi-value">{loading || error ? "—" : metric.value.toLocaleString("pt-BR")}</div>
             <div className="sae-kpi-bottom">
-              <Trend current={metric.value} previous={metric.previous} inverse={metric.id === "cancelled"} />
+              {error ? <span className="sae-trend sae-trend-neutral">Indisponível</span> : <Trend current={metric.value} previous={metric.previous} inverse={metric.id === "cancelled"} />}
               <Sparkline values={metric.values} accent={metric.accent} />
             </div>
           </article>
@@ -284,10 +290,10 @@ export default function DashboardOverview({ displayName, activeServices, activeP
               <h2>Atendimentos por dia</h2>
               <p>Volume de agendamentos nos últimos sete dias</p>
             </div>
-            <div className="sae-chart-total"><strong>{loading ? "—" : computed.currentWeek.length}</strong><span>no período</span></div>
+            <div className="sae-chart-total"><strong>{loading || error ? "—" : computed.currentWeek.length}</strong><span>no período</span></div>
           </div>
           <div className="sae-chart-wrap">
-            <svg className="sae-main-chart" viewBox="0 0 720 225" role="img" aria-label="Gráfico de linha com a quantidade de atendimentos por dia nos últimos sete dias">
+            <svg className={"sae-main-chart" + (error ? " sae-chart-error" : "")} viewBox="0 0 720 225" preserveAspectRatio="none" role="group" aria-label="Gráfico de linha com a quantidade de atendimentos por dia nos últimos sete dias">
               <defs>
                 <linearGradient id="sae-chart-fill" x1="0" x2="0" y1="0" y2="1">
                   <stop offset="0%" stopColor="#53d8e7" stopOpacity=".30" />
@@ -318,7 +324,7 @@ export default function DashboardOverview({ displayName, activeServices, activeP
               ))}
             </svg>
             {selectedPoint && selectedLabel && (
-              <div className="sae-chart-tooltip" style={{ left: ((selectedPoint.x / 720) * 100) + "%", top: (Math.max(0, (selectedPoint.y / 225) * 100 - 13)) + "%" }}>
+              <div className="sae-chart-tooltip" style={{ left: Math.min(88, Math.max(12, (selectedPoint.x / 720) * 100)) + "%", top: (Math.max(0, (selectedPoint.y / 225) * 100 - 13)) + "%" }}>
                 <strong>{selectedPoint.value} atendimentos</strong><span>{selectedLabel.label}</span>
               </div>
             )}
@@ -333,7 +339,7 @@ export default function DashboardOverview({ displayName, activeServices, activeP
           </div>
           <div className="sae-progress-block">
             <div className="sae-progress-ring" style={{ background: "conic-gradient(#56d6ce " + (computed.completionRate * 3.6) + "deg, rgba(255,255,255,.08) 0deg)" }}>
-              <div><strong>{loading ? "—" : computed.completionRate + "%"}</strong><span>concluídos</span></div>
+              <div><strong>{loading || error ? "—" : computed.completionRate + "%"}</strong><span>concluídos</span></div>
             </div>
             <div className="sae-progress-copy">
               <strong>{loading ? "—" : computed.completed + " de " + computed.currentWeek.length}</strong>
@@ -343,7 +349,7 @@ export default function DashboardOverview({ displayName, activeServices, activeP
           <div className="sae-operational-stats">
             <div><span className="sae-stat-bullet sae-bullet-violet" /><span>Profissionais ativos</span><strong>{activeProfessionals}</strong></div>
             <div><span className="sae-stat-bullet sae-bullet-cyan" /><span>Serviços ativos</span><strong>{activeServices}</strong></div>
-            <div><span className="sae-stat-bullet sae-bullet-green" /><span>Agendamentos de hoje</span><strong>{loading ? "—" : computed.todayCount}</strong></div>
+            <div><span className="sae-stat-bullet sae-bullet-green" /><span>Agendamentos de hoje</span><strong>{loading || error ? "—" : computed.todayCount}</strong></div>
           </div>
           <Link className="sae-text-link" href="/agenda">Abrir agenda completa <span>↗</span></Link>
         </article>
@@ -353,7 +359,7 @@ export default function DashboardOverview({ displayName, activeServices, activeP
             <div><span className="sae-card-kicker">ACOMPANHAMENTO</span><h2>Agenda em destaque</h2><p>Próximos horários e atendimentos recentes do período</p></div>
             <Link className="sae-card-link" href="/agenda">Ver agenda <span>↗</span></Link>
           </div>
-          {loading ? <div className="sae-activity-empty">Carregando atendimentos...</div> : computed.agendaItems.length === 0 ? (
+          {loading ? <div className="sae-activity-empty">Carregando atendimentos...</div> : error ? <div className="sae-activity-empty"><strong>Não foi possível consultar a agenda</strong><span>Use Atualizar para tentar novamente.</span></div> : computed.agendaItems.length === 0 ? (
             <div className="sae-activity-empty">
               <span className="sae-empty-calendar"><MetricIcon kind="calendar" /></span>
               <strong>Nenhum atendimento neste período</strong>
