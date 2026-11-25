@@ -39,7 +39,7 @@ Os nomes abaixo foram identificados nas descrições das PRs e nos arquivos refe
 | `202611240003_service_professional_links.sql` | Relação serviço-profissional | Aplicada ao projeto conectado conforme PR #3 |
 | `202611240004_service_professional_reverse_lookup.sql` | Índice/consulta reversa dos vínculos | Complementa a relação serviço-profissional |
 | `202611240005_reception_patient_data_minimization.sql` | Minimização de dados pessoais na recepção | Aplicada ao remoto em 24/11/2026 conforme registro operacional |
-| `202611240006_reception_client_join_permission.sql` | Permissão mínima para resolver o JOIN com o nome do paciente | Criada na branch `feat/dashboard-liquid-glass`; ainda não aplicada ao remoto |
+| `202611240006_reception_client_join_permission.sql` | Permissão mínima para resolver o JOIN com o nome do paciente | Aplicada ao remoto em 25/11/2026 e verificada por `has_column_privilege` |
 
 Pode haver migrations anteriores da integração WhatsApp/Supabase. Não inferir a lista completa somente a partir desta tabela.
 
@@ -82,7 +82,7 @@ Verificação:
 
 A concessão foi formalizada no repositório na migration `202611240006_reception_client_join_permission.sql`, na branch `feat/dashboard-liquid-glass`. Ela concede somente `SELECT(id)` a `authenticated` e revoga essa coluna de `PUBLIC` e `anon`. A migration 005 continua limitando a leitura de dados pessoais.
 
-**Estado:** implementada na branch e coberta por asserções em `tests/database.sql`; ainda depende do CI, revisão e aplicação autorizada no ambiente remoto.
+**Estado:** implementada, coberta por asserções em `tests/database.sql`, aprovada no CI #167 e aplicada ao Supabase remoto em 25/11/2026.
 
 ## 3.6 Migration 006 — chave de relacionamento do paciente
 
@@ -93,7 +93,7 @@ Arquivo: `202611240006_reception_client_join_permission.sql`
 - Não concede acesso a `phone`, `email` ou observações de agendamento.
 - Não altera políticas RLS nem concede leitura irrestrita de linhas.
 
-A migration está versionada na branch de interface, mas não foi aplicada no Supabase remoto.
+A migration foi aplicada ao projeto Supabase remoto em 25/11/2026, com o registro `reception_client_join_permission`. A verificação confirmou `SELECT(id)` para `authenticated` e ausência do privilégio para `anon`.
 
 ## 3.7 Ambientes e aplicação
 
@@ -106,7 +106,8 @@ A migration está versionada na branch de interface, mas não foi aplicada no Su
 ### Remoto
 - Projeto Supabase conectado identificado nos registros operacionais.
 - Migration 005 aplicada e verificada em 24/11/2026.
-- Não há autorização para reaplicar migrations remotamente sem revisão e aprovação específicas.
+- Migration 006 aplicada e verificada em 25/11/2026.
+- Não reaplicar migrations que já constam no histórico remoto.
 
 ### CI
 - O workflow prepara schema-base sem dados e aplica migrations no banco efêmero.
