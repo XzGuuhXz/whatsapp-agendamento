@@ -33,7 +33,8 @@ Este diretório reúne a documentação técnica e operacional do projeto. Ele r
 - O CI da PR #4, execução #112, passou nos checks e no job de banco de dados.
 - O ambiente local foi iniciado com Supabase em Docker e Next.js; as rotas principais responderam HTTP 200.
 - A agenda local foi validada visualmente com nome, serviço, profissional, horário e status.
-- Foi necessário conceder localmente `SELECT (id)` em `public.clients` à role `authenticated` para permitir o relacionamento PostgREST. Essa concessão local ainda precisa ser formalizada em migration e validada no CI antes de ser considerada parte permanente do projeto.
+- Foi necessário conceder localmente `SELECT (id)` em `public.clients` à role `authenticated` para permitir o relacionamento PostgREST. A concessão mínima foi formalizada na migration 006 da branch `feat/dashboard-liquid-glass`, com teste de privilégio para `authenticated` e `anon`; ainda precisa passar pelo CI e não foi aplicada ao Supabase remoto.
+- A branch `feat/dashboard-liquid-glass` também revisa a visão geral administrativa, os estados de erro, os indicadores, o gráfico responsivo e a busca rápida.
 - **Não há deploy de produção confirmado nesta documentação.**
 
 ## Como interpretar os estados
