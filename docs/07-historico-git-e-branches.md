@@ -17,7 +17,7 @@ A consulta à API do GitHub retornou oito branches:
 | `feat/service-professional-links` | `fe6ad1b` | Vínculos entre serviços e profissionais; documentação de funcionalidades implementadas. |
 | `feat/baileys-vps` | `4f59473` | Histórico do worker Baileys/VPS; commit de referência documenta resolução de remetentes LID. |
 | `fix/reception-patient-data-access` | `b24650f` | Correções de acesso a dados de pacientes e CI; branch usada como origem da PR #4. |
-| `feat/dashboard-liquid-glass` | `55a339e` | Revisão da visão geral administrativa Liquid Glass/Bento, indicadores baseados no Supabase, correções de estados de erro e permissão mínima do JOIN em `clients.id`; branch de feature ainda não integrada. |
+| `feat/dashboard-liquid-glass` | `5222c4e` | Revisão da visão geral administrativa Liquid Glass/Bento, indicadores baseados no Supabase, correções de estados de erro e permissão mínima do JOIN em `clients.id`; branch de feature ainda não integrada. |
 
 Os SHAs curtos são identificadores de referência observados durante esta atualização (24/11/2026, horário local). O HEAD de uma branch pode mudar; confira o GitHub antes de usar esta tabela para checkout, merge ou release.
 
