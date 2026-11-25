@@ -17,7 +17,7 @@ export default function Home() {
         console.log("Supabase:", error);
 
         setStatus(
-          "Supabase conectado, mas a tabela services ainda não existe."
+          "Não foi possível consultar os serviços. Verifique a configuração e as permissões do Supabase."
         );
 
         return;
@@ -41,3 +41,4 @@ export default function Home() {
     </main>
   );
 }
+
