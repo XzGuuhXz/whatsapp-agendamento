@@ -2,7 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
-import DashboardOverview from "@/components/dashboard/DashboardOverview";
+import DashboardOverview from "./components/dashboard/DashboardOverview";
 
 type StaffProfile = {
   user_id: string;
@@ -450,7 +450,8 @@ export default function Home() {
               displayName={profile.display_name}
               activeServices={services.filter((service) => service.active).length}
               activeProfessionals={professionals.filter((professional) => professional.active).length}
-            ) : view === "services" ? (
+            />
+          ) : view === "services" ? (
             <>
               <div className="welcome-row"><div><div className="eyebrow">CONFIGURAÇÃO DO ATENDIMENTO</div><h1>Serviços</h1><p className="page-description">Cadastre os serviços que poderão ser selecionados no fluxo de agendamento.</p></div><span className="section-tag">Catálogo do SAE</span></div>
               <div className="notice"><span className="notice-icon">i</span><div><strong>Cadastre somente serviços confirmados pela coordenação</strong><p>Os serviços cadastrados e ativos poderão aparecer como opções no chatbot. Não inclua informações sensíveis de pacientes.</p></div></div>
