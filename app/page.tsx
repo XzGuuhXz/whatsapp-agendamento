@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import DashboardOverview from "./components/dashboard/DashboardOverview";
 
@@ -30,6 +31,7 @@ const navigation: { id: View; label: string; icon: string }[] = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<StaffProfile | null>(null);
   const [view, setView] = useState<View>("overview");
@@ -326,9 +328,9 @@ export default function Home() {
     { label: "Visão geral", description: "Voltar ao resumo do SAE", keywords: "inicio dashboard resumo", action: () => setView("overview") },
     { label: "Serviços", description: "Gerenciar o catálogo de atendimentos", keywords: "catalogo procedimentos", action: () => setView("services") },
     { label: "Profissionais", description: "Gerenciar a equipe cadastrada", keywords: "equipe pessoas", action: () => setView("professionals") },
-    { label: "Agenda diária", description: "Consultar e atualizar agendamentos", keywords: "pacientes atendimentos", action: () => window.location.assign("/agenda") },
-    { label: "Horários", description: "Configurar o expediente semanal", keywords: "funcionamento abertura fechamento", action: () => window.location.assign("/horarios") },
-    { label: "Vínculos", description: "Associar serviços e profissionais", keywords: "relacionamentos", action: () => window.location.assign("/vinculos") },
+    { label: "Agenda diária", description: "Consultar e atualizar agendamentos", keywords: "pacientes atendimentos", action: () => router.push("/agenda") },
+    { label: "Horários", description: "Configurar o expediente semanal", keywords: "funcionamento abertura fechamento", action: () => router.push("/horarios") },
+    { label: "Vínculos", description: "Associar serviços e profissionais", keywords: "relacionamentos", action: () => router.push("/vinculos") },
   ];
   const filteredCommands = commandItems.filter((item) =>
     (item.label + " " + item.description + " " + item.keywords).toLocaleLowerCase("pt-BR").includes(commandQuery.trim().toLocaleLowerCase("pt-BR"))
