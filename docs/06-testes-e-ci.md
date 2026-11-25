@@ -49,6 +49,7 @@ Os testes descritos nas PRs cobrem, entre outros:
 - A PR #4 foi mesclada em 24/11/2026.
 - Execução CI #112 (ID `45509220207`) passou nos checks de aplicação e no job de banco de dados, conforme registro operacional.
 - A mudança do worker para `npm ci` respeita o lockfile e melhora a reprodutibilidade.
+- CI #167 (execução 45545275291), no HEAD `f7fd0c5abc641245abd452d9b6dab14a29de2971`, passou nos jobs `checks` e `database`, incluindo build, testes HTTP, worker e PostgreSQL.
 
 ## 6.5 Teste manual da agenda local — 24/11/2026
 
@@ -64,7 +65,7 @@ Diagnóstico e correção:
 - JOIN com clientes, serviços e profissionais passou;
 - interface exibiu nome do paciente, serviço, profissional, horário e status.
 
-**Atualização na branch `feat/dashboard-liquid-glass`:** a permissão mínima foi formalizada na migration `202611240006_reception_client_join_permission.sql`; `tests/database.sql` agora exige `SELECT(id)` para `authenticated` e confirma ausência desse privilégio para `anon`. O resultado do CI desta revisão deve ser conferido antes de considerar a correção validada.
+**Atualização na branch `feat/sae-simple-admin`:** a migration `202611240006_reception_client_join_permission.sql` foi validada pelo CI #167 e aplicada ao Supabase remoto em 25/11/2026. A verificação remota confirmou `authenticated_can_select_client_id=true`, `authenticated_can_select_client_name=true`, `authenticated_can_select_client_phone=false`, `authenticated_can_select_client_email=false`, `anon_can_select_client_id=false`, `anon_can_select_client_name=false` e `authenticated_can_select_appointment_notes=false`.
 
 ## 6.6 O que não foi validado
 
@@ -72,7 +73,7 @@ Diagnóstico e correção:
 - Deploy público do painel não foi confirmado.
 - Fluxo de produção com cadastros oficiais do SAE não foi confirmado.
 - Testes de carga e recuperação operacional de produção não foram registrados.
-- A migration 006 está somente na branch de dashboard e ainda não foi aplicada ao Supabase remoto.
+- O teste da API PostgREST com uma sessão real de funcionário ainda precisa ser executado; a verificação atual confirmou os privilégios SQL, mas não substitui o teste HTTP autenticado.
 
 ## 6.7 Critério de conclusão
 
