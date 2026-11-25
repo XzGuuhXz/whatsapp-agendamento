@@ -66,7 +66,13 @@ function statusLabel(status: AppointmentStatus): string {
 
 function formatAppointmentDate(value: string): string {
   return new Intl.DateTimeFormat("pt-BR", {
-    timeZone: TIME_ZONE, day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
+    timeZone: TIME_ZONE, day: "2-digit", month: "short",
+  }).format(new Date(value));
+}
+
+function formatAppointmentTime(value: string): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: TIME_ZONE, hour: "2-digit", minute: "2-digit",
   }).format(new Date(value));
 }
 
@@ -125,7 +131,7 @@ export default function DashboardOverview({ displayName, activeServices, activeP
     setLoading(true);
     setError("");
     const start = dayStartIso(shiftDay(today, -13));
-    const end = dayStartIso(shiftDay(today, 1));
+    const end = dayStartIso(shiftDay(today, 7));
     const { data, error: queryError } = await supabase
       .from("appointments")
       .select("id, starts_at, ends_at, status, clients(name), services(name), professionals(name)")
@@ -193,8 +199,10 @@ export default function DashboardOverview({ displayName, activeServices, activeP
     const completed = metrics.find((metric) => metric.id === "completed")?.value ?? 0;
     const completionRate = currentWeek.length ? Math.round((completed / currentWeek.length) * 100) : 0;
     const now = Date.now();
-    const upcoming = currentWeek.filter((item) => new Date(item.starts_at).getTime() >= now)
-      .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
+    const upcoming = appointments.filter((item) => {
+      const key = dateKey(new Date(item.starts_at));
+      return key >= tomorrow && key < shiftDay(today, 7);
+    }).sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
     const recent = currentWeek.filter((item) => new Date(item.starts_at).getTime() < now)
       .sort((a, b) => new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime());
     const agendaItems = [...upcoming, ...recent].slice(0, 5);
@@ -214,7 +222,12 @@ export default function DashboardOverview({ displayName, activeServices, activeP
     }));
   }, [computed.chart]);
 
-  const linePath = chartPoints.map((point, index) => (index === 0 ? "M" : "L") + " " + point.x + " " + point.y).join(" ");
+  const linePath = chartPoints.reduce((path, point, index) => {
+    if (index === 0) return "M " + point.x + " " + point.y;
+    const previous = chartPoints[index - 1];
+    const middle = (previous.x + point.x) / 2;
+    return path + " C " + middle + " " + previous.y + ", " + middle + " " + point.y + ", " + point.x + " " + point.y;
+  }, "");
   const areaPath = chartPoints.length
     ? linePath + " L " + chartPoints[chartPoints.length - 1].x + " 190 L " + chartPoints[0].x + " 190 Z"
     : "";
@@ -342,10 +355,11 @@ export default function DashboardOverview({ displayName, activeServices, activeP
           ) : (
             <div className="sae-activity-list">
               {computed.agendaItems.map((item) => {
-                const formatted = formatAppointmentDate(item.starts_at).split(",");
+                const formattedDate = formatAppointmentDate(item.starts_at);
+                const formattedTime = formatAppointmentTime(item.starts_at);
                 return (
                   <div className="sae-activity-row" key={item.id}>
-                    <div className="sae-activity-date"><strong>{formatted[0]}</strong><span>{formatted[1]?.trim()}</span></div>
+                    <div className="sae-activity-date"><strong>{formattedDate}</strong><span>{formattedTime}</span></div>
                     <div className="sae-activity-main"><strong>{relationName(item.clients)}</strong><span>{relationName(item.services)} <i>·</i> {relationName(item.professionals)}</span></div>
                     <span className={"sae-status-pill sae-status-" + item.status}>{statusLabel(item.status)}</span>
                   </div>
