@@ -204,11 +204,14 @@ export default function DashboardOverview({ displayName, activeServices, activeP
       value: currentWeek.filter((item) => dateKey(new Date(item.starts_at)) === day).length,
     }));
     const completed = metrics.find((metric) => metric.id === "completed")?.value ?? 0;
-    const eligibleCount = currentWeek.filter((item) =>
-      item.status === "scheduled" || item.status === "confirmed" || item.status === "completed"
-    ).length;
-    const completionRate = eligibleCount ? Math.round((completed / eligibleCount) * 100) : 0;
     const now = lastUpdated?.getTime() ?? 0;
+    // A taxa considera somente horários que já ocorreram; faltas contam como não concluídas,
+    // cancelamentos não entram no denominador e agendamentos futuros não reduzem a taxa.
+    const eligibleCount = currentWeek.filter((item) => {
+      const startsAt = new Date(item.starts_at).getTime();
+      return startsAt < now && item.status !== "cancelled";
+    }).length;
+    const completionRate = eligibleCount ? Math.round((completed / eligibleCount) * 100) : 0;
 
     // Próximos horários incluem o restante do dia atual, não apenas os dias seguintes.
     const upcoming = appointments.filter((item) => {
@@ -348,7 +351,7 @@ export default function DashboardOverview({ displayName, activeServices, activeP
             </div>
             <div className="sae-progress-copy">
               <strong>{loading || error ? "—" : computed.completed + " de " + computed.eligibleCount}</strong>
-              <span>conclusões entre atendimentos válidos nesta semana</span>
+              <span>concluídos entre horários já ocorridos, sem cancelamentos</span>
             </div>
           </div>
           <div className="sae-operational-stats">
