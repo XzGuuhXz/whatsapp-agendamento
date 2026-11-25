@@ -345,8 +345,8 @@ export default function DashboardOverview({ displayName, activeServices, activeP
               <div><strong>{loading || error ? "—" : computed.completionRate + "%"}</strong><span>concluídos</span></div>
             </div>
             <div className="sae-progress-copy">
-              <strong>{loading ? "—" : computed.completed + " de " + computed.currentWeek.length}</strong>
-              <span>atendimentos concluídos nesta semana</span>
+              <strong>{loading || error ? "—" : computed.completed + " de " + computed.eligibleCount}</strong>
+              <span>conclusões entre atendimentos válidos nesta semana</span>
             </div>
           </div>
           <div className="sae-operational-stats">
