@@ -1226,7 +1226,6 @@ body {
     position: sticky;
     top: 8px;
     z-index: 30;
-    inset: auto;
     display: block;
     width: auto;
     max-height: none;
