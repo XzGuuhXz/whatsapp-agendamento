@@ -154,8 +154,11 @@ export default function DashboardOverview() {
         .order("name", { ascending: true }),
     ]);
 
-    const firstError =
-      appointmentResult.error ?? serviceResult.error ?? professionalResult.error;
+    const errors = [
+      appointmentResult.error,
+      serviceResult.error,
+      professionalResult.error,
+    ].filter(Boolean);
 
     setAppointments(
       appointmentResult.error
@@ -173,18 +176,19 @@ export default function DashboardOverview() {
         : (professionalResult.data ?? []).filter((professional) => professional.active).length
     );
 
-    if (firstError) {
-      setError("Não foi possível carregar todos os dados do início. " + firstError.message);
+    if (errors.length > 0) {
+      const firstError = errors[0];
+      setError(
+        "Não foi possível carregar todos os dados do início. " +
+          (firstError instanceof Error ? firstError.message : "Verifique a conexão e tente novamente.")
+      );
     }
 
     setLoading(false);
   }, [today]);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void loadDashboard();
-    }, 0);
-    return () => window.clearTimeout(timer);
+    void loadDashboard();
   }, [loadDashboard]);
 
   const todayAppointments = useMemo(

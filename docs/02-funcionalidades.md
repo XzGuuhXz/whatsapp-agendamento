@@ -50,6 +50,8 @@ Os valores acima devem ser mantidos sincronizados com as regras e testes SQL atu
 - Profissionais: consultar, cadastrar, editar e desativar.
 - Vínculos: associar profissionais aos serviços.
 - Expediente: configurar os dias e horários globais.
+- Preferência de tema claro/escuro disponível no painel e salva no navegador.
+- O painel não cadastra nem exibe preço de serviços; os atendimentos do SAE são gratuitos.
 
 As operações dependem das policies e permissões instaladas no banco. Cadastros só devem refletir informações confirmadas pela coordenação.
 

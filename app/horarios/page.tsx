@@ -52,10 +52,7 @@ export default function HoursPage() {
   }, []);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void loadHours();
-    }, 0);
-    return () => window.clearTimeout(timer);
+    void loadHours();
   }, [loadHours]);
 
   function change(day: number, patch: Partial<BusinessHour>) {

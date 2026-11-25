@@ -21,7 +21,6 @@ export default function ServicesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [serviceName, setServiceName] = useState("");
   const [duration, setDuration] = useState("30");
-  const [price, setPrice] = useState("");
 
   const loadServices = useCallback(async () => {
     setLoading(true);
@@ -51,14 +50,12 @@ export default function ServicesPage() {
     setEditingId(null);
     setServiceName("");
     setDuration("30");
-    setPrice("");
   }
 
   function startEdit(service: Service) {
     setEditingId(service.id);
     setServiceName(service.name);
     setDuration(String(service.duration_minutes));
-    setPrice(service.price == null ? "" : String(service.price));
     setMessage("");
     setError("");
   }
@@ -69,7 +66,6 @@ export default function ServicesPage() {
     setMessage("");
 
     const minutes = Number(duration);
-    const parsedPrice = price.trim() === "" ? null : Number(price.replace(",", "."));
 
     if (serviceName.trim().length < 2) {
       setError("Informe um nome com pelo menos 2 caracteres.");
@@ -79,16 +75,12 @@ export default function ServicesPage() {
       setError("A duração deve ser um número inteiro entre 5 e 480 minutos.");
       return;
     }
-    if (parsedPrice !== null && (!Number.isFinite(parsedPrice) || parsedPrice < 0)) {
-      setError("Informe um valor válido ou deixe o campo em branco.");
-      return;
-    }
 
     setSaving(true);
     const payload = {
       name: serviceName.trim(),
       duration_minutes: minutes,
-      price: parsedPrice,
+      price: null,
     };
 
     const result = editingId
@@ -173,7 +165,6 @@ export default function ServicesPage() {
                   <tr>
                     <th>Serviço</th>
                     <th>Duração</th>
-                    <th>Valor</th>
                     <th>Status</th>
                     <th>Ações</th>
                   </tr>
@@ -183,11 +174,6 @@ export default function ServicesPage() {
                     <tr key={service.id}>
                       <td><strong>{service.name}</strong></td>
                       <td>{service.duration_minutes} min</td>
-                      <td>
-                        {service.price == null
-                          ? "—"
-                          : service.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                      </td>
                       <td>
                         <span className={service.active ? "status-text status-active" : "status-text status-inactive"}>
                           {service.active ? "Ativo" : "Inativo"}
@@ -233,16 +219,6 @@ export default function ServicesPage() {
               value={duration}
               onChange={(event) => setDuration(event.target.value)}
               required
-            />
-            <label htmlFor="service-price">Valor (opcional)</label>
-            <input
-              id="service-price"
-              type="number"
-              min="0"
-              step="0.01"
-              value={price}
-              onChange={(event) => setPrice(event.target.value)}
-              placeholder="Deixe em branco se não se aplica"
             />
             {error && <p className="form-error" role="alert">{error}</p>}
             {message && <p className="success-message" role="status">{message}</p>}

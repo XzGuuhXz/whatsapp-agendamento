@@ -949,3 +949,222 @@ h3 {
     padding: 22px 18px;
   }
 }
+
+
+/* Tema escuro — aplicado ao painel inteiro e mantido no navegador. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  background: #111715;
+  color: #e7eeeb;
+}
+
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] .auth-screen {
+  background: #111715;
+  color: #e7eeeb;
+}
+
+:root[data-theme="dark"] .app-sidebar,
+:root[data-theme="dark"] .app-topbar,
+:root[data-theme="dark"] .surface-card,
+:root[data-theme="dark"] .auth-card {
+  border-color: #303c36;
+  background: #19221e;
+}
+
+:root[data-theme="dark"] .app-sidebar {
+  border-right-color: #303c36;
+}
+
+:root[data-theme="dark"] .app-topbar {
+  border-bottom-color: #303c36;
+}
+
+:root[data-theme="dark"] .app-brand,
+:root[data-theme="dark"] .app-brand strong,
+:root[data-theme="dark"] .account-info strong,
+:root[data-theme="dark"] h1,
+:root[data-theme="dark"] h2,
+:root[data-theme="dark"] h3,
+:root[data-theme="dark"] .day-summary strong,
+:root[data-theme="dark"] .day-summary .summary-date {
+  color: #e7eeeb;
+}
+
+:root[data-theme="dark"] .app-brand small,
+:root[data-theme="dark"] .account-info span,
+:root[data-theme="dark"] .page-header p,
+:root[data-theme="dark"] .section-description,
+:root[data-theme="dark"] .auth-card > p,
+:root[data-theme="dark"] .auth-heading p,
+:root[data-theme="dark"] .auth-brand small,
+:root[data-theme="dark"] .auth-footnote,
+:root[data-theme="dark"] .state-message,
+:root[data-theme="dark"] .day-summary,
+:root[data-theme="dark"] .date-time-cell span,
+:root[data-theme="dark"] .section-header > span,
+:root[data-theme="dark"] .hours-field,
+:root[data-theme="dark"] .hours-state,
+:root[data-theme="dark"] .link-card-heading small,
+:root[data-theme="dark"] .link-professional small {
+  color: #aab7b0;
+}
+
+:root[data-theme="dark"] .brand-mark {
+  border-color: #43524a;
+  color: #e7eeeb;
+}
+
+:root[data-theme="dark"] .nav-link {
+  color: #c5d0ca;
+}
+
+:root[data-theme="dark"] .nav-link:hover {
+  background: #222e28;
+  color: #f1f5f3;
+}
+
+:root[data-theme="dark"] .nav-link.is-active {
+  background: #193b38;
+  color: #8bd0c8;
+}
+
+:root[data-theme="dark"] a {
+  color: #8bd0c8;
+}
+
+:root[data-theme="dark"] .button-secondary,
+:root[data-theme="dark"] .button:not(.button-primary),
+:root[data-theme="dark"] .table-actions button {
+  border-color: #435149;
+  background: #202b25;
+  color: #e1e9e5;
+}
+
+:root[data-theme="dark"] .button-secondary:hover,
+:root[data-theme="dark"] .button:not(.button-primary):hover,
+:root[data-theme="dark"] .table-actions button:hover {
+  background: #293831;
+}
+
+:root[data-theme="dark"] .button-primary {
+  border-color: #147d78;
+  background: #147d78;
+  color: #fff;
+}
+
+:root[data-theme="dark"] .button-primary:hover {
+  border-color: #23938c;
+  background: #23938c;
+}
+
+:root[data-theme="dark"] .auth-form label,
+:root[data-theme="dark"] .compact-form label,
+:root[data-theme="dark"] .filter-row label,
+:root[data-theme="dark"] .hours-day {
+  color: #d7e0db;
+}
+
+:root[data-theme="dark"] .auth-form input,
+:root[data-theme="dark"] .compact-form input,
+:root[data-theme="dark"] .filter-row input,
+:root[data-theme="dark"] .hours-field input,
+:root[data-theme="dark"] .status-select {
+  border-color: #435149;
+  background: #111a15;
+  color: #e7eeeb;
+}
+
+:root[data-theme="dark"] .auth-form input::placeholder,
+:root[data-theme="dark"] .compact-form input::placeholder {
+  color: #8a9890;
+}
+
+:root[data-theme="dark"] .data-table th {
+  border-bottom-color: #3a4740;
+  background: #222d27;
+  color: #b8c5be;
+}
+
+:root[data-theme="dark"] .data-table td {
+  border-bottom-color: #2e3a33;
+  color: #dbe4df;
+}
+
+:root[data-theme="dark"] .status-active,
+:root[data-theme="dark"] .status-confirmed,
+:root[data-theme="dark"] .status-completed {
+  color: #8ed1b0;
+}
+
+:root[data-theme="dark"] .status-inactive,
+:root[data-theme="dark"] .status-cancelled {
+  color: #e6a1a1;
+}
+
+:root[data-theme="dark"] .status-scheduled,
+:root[data-theme="dark"] .status-no_show {
+  color: #c1cbc5;
+}
+
+:root[data-theme="dark"] .error-box {
+  border-color: #684343;
+  background: #2a1d1d;
+  color: #f0b4b4;
+}
+
+:root[data-theme="dark"] .form-error {
+  color: #f0aaaa;
+}
+
+:root[data-theme="dark"] .success-message {
+  color: #9dd7bc;
+}
+
+:root[data-theme="dark"] .help-text {
+  border-color: #3a4841;
+  background: #202b25;
+  color: #c5d0ca;
+}
+
+:root[data-theme="dark"] .hours-row,
+:root[data-theme="dark"] .link-professional {
+  border-bottom-color: #303c36;
+  border-top-color: #303c36;
+}
+
+:root[data-theme="dark"] .link-card {
+  border-color: #39463f;
+  background: #1d2822;
+}
+
+:root[data-theme="dark"] .muted-note {
+  color: #aab7b0;
+}
+
+:root[data-theme="dark"] .hours-disabled .hours-field {
+  color: #76847c;
+}
+
+:root[data-theme="dark"] :focus-visible {
+  outline-color: #8bd0c8;
+}
+
+:root[data-theme="dark"] .theme-toggle {
+  border-color: #49645d;
+  color: #a8ded7;
+}
+
+@media (max-width: 760px) {
+  .app-topbar {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 420px) {
+  .theme-toggle {
+    min-height: 34px;
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+}

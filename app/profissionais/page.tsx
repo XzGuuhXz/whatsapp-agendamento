@@ -37,10 +37,7 @@ export default function ProfessionalsPage() {
   }, []);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void loadProfessionals();
-    }, 0);
-    return () => window.clearTimeout(timer);
+    void loadProfessionals();
   }, [loadProfessionals]);
 
   function resetForm() {

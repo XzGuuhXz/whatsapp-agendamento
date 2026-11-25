@@ -32,6 +32,23 @@ export default function SaeAppShell({ children }: { children: React.ReactNode })
   const [authError, setAuthError] = useState("");
   const [authBusy, setAuthBusy] = useState(false);
 
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [themeReady, setThemeReady] = useState(false);
+
+  useEffect(() => {
+    const storedTheme = window.localStorage.getItem("sae-theme");
+    if (storedTheme === "dark" || storedTheme === "light") {
+      setTheme(storedTheme);
+    }
+    setThemeReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!themeReady) return;
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem("sae-theme", theme);
+  }, [theme, themeReady]);
+
   const loadProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from("staff_profiles")
@@ -220,6 +237,15 @@ export default function SaeAppShell({ children }: { children: React.ReactNode })
 
       <div className="app-main">
         <header className="app-topbar">
+          <button
+            className="button button-secondary theme-toggle"
+            type="button"
+            onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")}
+            aria-pressed={theme === "dark"}
+            aria-label={theme === "dark" ? "Ativar tema claro" : "Ativar tema escuro"}
+          >
+            {theme === "dark" ? "Modo claro" : "Modo escuro"}
+          </button>
           <div className="account-info">
             <strong>{profile.display_name}</strong>
             <span>{profile.role === "admin" ? "Administrador" : "Recepção"}</span>

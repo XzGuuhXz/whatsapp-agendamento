@@ -43,10 +43,7 @@ export default function ServiceProfessionalLinksPage() {
   }, []);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void loadData();
-    }, 0);
-    return () => window.clearTimeout(timer);
+    void loadData();
   }, [loadData]);
 
   function isLinked(serviceId: string, professionalId: string) {
