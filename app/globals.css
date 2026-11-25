@@ -1054,3 +1054,44 @@ button:disabled { cursor: not-allowed; opacity: .6; }
 }
 .sae-chart-state strong { color: #e3ebf4; font-size: 11px; }
 .sae-main-chart { touch-action: pan-y; }
+
+/* Final usability refinements */
+.sae-glass-shell {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+.sae-glass-shell :focus-visible,
+.agenda-page :focus-visible {
+  outline: 2px solid rgba(104,224,229,.88);
+  outline-offset: 3px;
+}
+.sae-kpi-top { font-size: 11px; }
+.sae-kpi-value { font-size: 33px; }
+.sae-trend { font-size: 10px; }
+.sae-trend small { font-size: 9px; }
+.sae-card-kicker { font-size: 9px; }
+.sae-card-heading h2 { font-size: 15px; }
+.sae-card-heading p { font-size: 10px; }
+.sae-chart-footer { font-size: 9px; }
+.sae-operational-stats > div { font-size: 10px; }
+.sae-activity-date strong { font-size: 10px; }
+.sae-activity-date span { font-size: 9px; }
+.sae-activity-main strong { font-size: 11px; }
+.sae-activity-main span { font-size: 9px; }
+.sae-status-pill { font-size: 9px; }
+.sae-shortcut-row strong { font-size: 10px; }
+.sae-shortcut-row small { font-size: 9px; }
+.sae-chart-error { opacity: .16; }
+@media (max-width: 560px) {
+  .sae-kpi-value { font-size: 29px; }
+  .sae-trend { font-size: 9px; }
+  .sae-card-heading h2 { font-size: 14px; }
+  .sae-chart-label { font-size: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sae-glass-card,
+  .sae-glass-shell .nav-link,
+  .sae-command-button,
+  .sae-icon-button,
+  .sae-refresh-button { transition: none; }
+}
