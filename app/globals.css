@@ -992,6 +992,9 @@ button:disabled { cursor: not-allowed; opacity: .6; }
   .sae-bento-grid { grid-template-columns: minmax(0,1fr); gap: 11px; }
   .sae-chart-card, .sae-insight-card, .sae-activity-card, .sae-shortcuts-card { grid-column: 1; padding: 16px; }
   .sae-main-chart { height: 185px; }
+  .sae-chart-label { font-size: 18px; }
+  .sae-chart-error { opacity: .16; }
+
   .sae-chart-footer { font-size: 7px; }
   .sae-progress-block { gap: 12px; }
   .sae-progress-ring { width: 98px; height: 98px; flex-basis: 98px; }
@@ -1031,3 +1034,23 @@ button:disabled { cursor: not-allowed; opacity: .6; }
   font-size: 8px;
   font-weight: 800;
 }
+
+.sae-live-indicator.is-error i { background: #ed8d9a; box-shadow: 0 0 9px rgba(237,141,154,.55); }
+.sae-chart-state {
+  position: absolute;
+  inset: 34% 12% auto;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 12px;
+  background: rgba(10,14,23,.82);
+  padding: 12px;
+  color: #a7b4c6;
+  font-size: 10px;
+  text-align: center;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.sae-chart-state strong { color: #e3ebf4; font-size: 11px; }
+.sae-main-chart { touch-action: pan-y; }
