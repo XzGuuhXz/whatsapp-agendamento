@@ -3,11 +3,11 @@
 ## 8.1 Pendências prioritárias
 
 ### P0 — Permissão de relacionamento na agenda
-- [ ] Formalizar em migration a concessão mínima `SELECT(id)` em `public.clients` para `authenticated`.
-- [ ] Confirmar que a migration mantém bloqueados `phone` e `email`.
-- [ ] Confirmar que `appointments.notes` permanece inacessível.
+- [x] Formalizar na branch `feat/dashboard-liquid-glass` a concessão mínima `SELECT(id)` em `public.clients` para `authenticated`, via migration 006.
+- [x] Manter `phone` e `email` sem leitura para `authenticated`.
+- [x] Manter `appointments.notes` inacessível conforme migration 005.
+- [ ] Confirmar testes SQL/CI da migration 006.
 - [ ] Testar o endpoint PostgREST autenticado, não somente SQL direto.
-- [ ] Executar testes SQL e CI.
 - [ ] Aplicar ao remoto somente após revisão e autorização explícita, caso a mudança seja necessária naquele ambiente.
 
 ### P1 — Dados operacionais do SAE
@@ -61,7 +61,7 @@
 - Baileys é um transporte não oficial e tem limitações funcionais e riscos próprios.
 - Não há deploy público confirmado.
 - A documentação histórica de `main` pode estar desatualizada em relação às branches de desenvolvimento.
-- A correção local de `clients.id` ainda precisa ser versionada.
+- A correção de `clients.id` está versionada na migration 006 da branch `feat/dashboard-liquid-glass`, mas ainda não foi aplicada ao Supabase remoto.
 
 ## 8.4 Critérios para considerar o projeto pronto para operação
 
