@@ -215,7 +215,7 @@ export default function DashboardOverview({ displayName, activeServices, activeP
     const agendaItems = [...upcoming, ...recent].slice(0, 5);
     const todayCount = currentWeek.filter((item) => dateKey(new Date(item.starts_at)) === today).length;
     return { metrics, chart, currentWeek, completionRate, agendaItems, todayCount, completed };
-  }, [appointments, today]);
+  }, [appointments, today, lastUpdated]);
 
   const chartPoints = useMemo(() => {
     const values = computed.chart.map((item) => item.value);
