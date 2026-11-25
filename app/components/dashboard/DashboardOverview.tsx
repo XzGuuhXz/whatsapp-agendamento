@@ -318,11 +318,14 @@ export default function DashboardOverview({ displayName, activeServices, activeP
                     onMouseLeave={() => setHoveredDay(null)}
                     onFocus={() => setHoveredDay(index)}
                     onBlur={() => setHoveredDay(null)}
+                    onClick={() => setHoveredDay(index)}
+                    onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setHoveredDay(index); } }}
                   />
                   <text x={point.x} y="213" textAnchor="middle" className="sae-chart-label">{computed.chart[index].label}</text>
                 </g>
               ))}
             </svg>
+            {error && <div className="sae-chart-state"><strong>Dados indisponíveis</strong><span>Atualize para tentar carregar o gráfico novamente.</span></div>}
             {selectedPoint && selectedLabel && (
               <div className="sae-chart-tooltip" style={{ left: Math.min(88, Math.max(12, (selectedPoint.x / 720) * 100)) + "%", top: (Math.max(0, (selectedPoint.y / 225) * 100 - 13)) + "%" }}>
                 <strong>{selectedPoint.value} atendimentos</strong><span>{selectedLabel.label}</span>
@@ -338,7 +341,7 @@ export default function DashboardOverview({ displayName, activeServices, activeP
             <span className="sae-mini-icon"><ChartIcon /></span>
           </div>
           <div className="sae-progress-block">
-            <div className="sae-progress-ring" style={{ background: "conic-gradient(#56d6ce " + (computed.completionRate * 3.6) + "deg, rgba(255,255,255,.08) 0deg)" }}>
+            <div className="sae-progress-ring" style={{ background: loading || error ? "rgba(255,255,255,.08)" : "conic-gradient(#56d6ce " + (computed.completionRate * 3.6) + "deg, rgba(255,255,255,.08) 0deg)" }}>
               <div><strong>{loading || error ? "—" : computed.completionRate + "%"}</strong><span>concluídos</span></div>
             </div>
             <div className="sae-progress-copy">
