@@ -275,8 +275,10 @@ export default function DashboardOverview({ displayName, activeServices, activeP
             </div>
             <div className="sae-kpi-value">{loading || error ? "—" : metric.value.toLocaleString("pt-BR")}</div>
             <div className="sae-kpi-bottom">
-              {error ? <span className="sae-trend sae-trend-neutral">Indisponível</span> : <Trend current={metric.value} previous={metric.previous} inverse={metric.id === "cancelled"} />}
-              <Sparkline values={metric.values} accent={metric.accent} />
+              {loading || error
+                ? <span className="sae-trend sae-trend-neutral">{loading ? "Carregando..." : "Indisponível"}</span>
+                : <Trend current={metric.value} previous={metric.previous} inverse={metric.id === "cancelled"} />}
+              {!loading && !error && <Sparkline values={metric.values} accent={metric.accent} />}
             </div>
           </article>
         ))}
