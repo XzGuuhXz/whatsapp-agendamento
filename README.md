@@ -22,15 +22,16 @@ Requer Node.js 22 ou superior.
 ```bash
 cd ~/whatsapp-agendamento
 git fetch origin
-git switch feat/sae-simple-admin
+git switch main
+git pull --ff-only origin main
 npm ci
 npm run worker:install
 cp .env.example .env.local
 ```
 
-Se você já tem `.env.local`, preserve-o e acrescente apenas as variáveis novas do exemplo. Para testar o Baileys, mantenha `WHATSAPP_TRANSPORT=baileys` e preencha as credenciais do Supabase localmente. Configure também `worker/.env` copiando `worker/.env.example` e preenchendo a mesma URL e chave `SUPABASE_SERVICE_ROLE_KEY`.
+Se você já tem `.env.local`, preserve-o e acrescente apenas as variáveis novas do exemplo. O transporte padrão recomendado para operação institucional é `WHATSAPP_TRANSPORT=meta`; preencha as credenciais da Meta descritas abaixo. Para testes locais sem a API oficial, use `WHATSAPP_TRANSPORT=baileys` e configure `worker/.env` copiando `worker/.env.example`, com a URL e a chave `SUPABASE_SERVICE_ROLE_KEY`.
 
-Abra dois terminais na raiz do repositório. No primeiro, inicie o worker e faça o pareamento pelo QR Code:
+O transporte Meta não precisa do worker Baileys: o Next.js recebe o webhook e envia respostas pela Cloud API. Para testar a alternativa Baileys, abra dois terminais na raiz do repositório. No primeiro, inicie o worker e faça o pareamento pelo QR Code:
 
 ```bash
 npm run worker:start
@@ -74,7 +75,7 @@ Não há modo que desative a verificação de assinatura.
 
 ## Supabase
 
-A integração usa o projeto Supabase `dylipirsdywzitppzjjh`. O histórico remoto foi consultado em 25/11/2026 e confirma as migrations da integração, recepção, agenda, vínculos, minimização de dados e permissão de relacionamento do paciente. A migration `202611240006_reception_client_join_permission.sql` foi aplicada pelo fluxo de migration e verificada: `authenticated` tem `SELECT(id, name)` em `clients`, sem acesso a `phone`/`email`; `anon` não tem leitura de `clients.id`/`name`, e `authenticated` não lê `appointments.notes`. Não reaplique migrations já registradas. O worker não altera o banco automaticamente.
+A integração usa o projeto Supabase `dylipirsdywzitppzjjh`. O histórico remoto foi consultado em 25/11/2026 e confirma as migrations da integração, recepção, agenda, vínculos, minimização de dados e permissão de relacionamento do paciente. Atenção: as versões registradas no histórico remoto foram criadas pelo fluxo MCP e podem diferir dos prefixos dos arquivos locais; antes de usar `supabase db push` ou `supabase migration up` em produção, reconcilie o histórico com `supabase migration list` e `supabase migration repair` após revisar cada versão. Não reaplique migrations já executadas. A migration `202611240006_reception_client_join_permission.sql` foi aplicada pelo fluxo de migration e verificada: `authenticated` tem `SELECT(id, name)` em `clients`, sem acesso a `phone`/`email`; `anon` não tem leitura de `clients.id`/`name`, e `authenticated` não lê `appointments.notes`. Não reaplique migrations já registradas. O worker não altera o banco automaticamente.
 
 Os arquivos em `supabase/migrations/` documentam os ajustes de acesso e a integração. A migração de integração requer as oito tabelas originais, a unicidade de `conversation_sessions.phone` e o acesso de servidor já configurados. Não é um instalador completo para um banco vazio.
 
