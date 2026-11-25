@@ -153,7 +153,10 @@ export default function DashboardOverview({ displayName, activeServices, activeP
     setLoading(false);
   }, [today]);
 
-  useEffect(() => { void loadAppointments(); }, [loadAppointments]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void loadAppointments(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [loadAppointments]);
 
   const computed = useMemo(() => {
     const currentStart = shiftDay(today, -6);
@@ -202,7 +205,7 @@ export default function DashboardOverview({ displayName, activeServices, activeP
     }));
     const completed = metrics.find((metric) => metric.id === "completed")?.value ?? 0;
     const completionRate = currentWeek.length ? Math.round((completed / currentWeek.length) * 100) : 0;
-    const now = Date.now();
+    const now = lastUpdated?.getTime() ?? 0;
     const upcoming = appointments.filter((item) => {
       const key = dateKey(new Date(item.starts_at));
       return key >= tomorrow && key < shiftDay(today, 7);
