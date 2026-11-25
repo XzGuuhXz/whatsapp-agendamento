@@ -61,6 +61,7 @@ BEGIN
  IF NOT EXISTS(SELECT 1 FROM public.messages WHERE whatsapp_message_id='wamid.test-outgoing' AND direction='outgoing') THEN RAISE EXCEPTION 'Outbox log failed';END IF;
 
  IF NOT has_column_privilege('authenticated','public.clients','name','SELECT')
+    OR NOT has_column_privilege('authenticated','public.clients','id','SELECT')
     OR has_column_privilege('authenticated','public.clients','phone','SELECT')
     OR has_column_privilege('authenticated','public.clients','email','SELECT') THEN
    RAISE EXCEPTION 'Reception client column permissions are too broad';
@@ -69,7 +70,8 @@ BEGIN
     OR has_column_privilege('authenticated','public.appointments','notes','SELECT') THEN
    RAISE EXCEPTION 'Reception appointment column permissions are too broad';
  END IF;
- IF has_column_privilege('anon','public.clients','name','SELECT')
+ IF has_column_privilege('anon','public.clients','id','SELECT')
+    OR has_column_privilege('anon','public.clients','name','SELECT')
     OR has_column_privilege('anon','public.appointments','starts_at','SELECT') THEN
    RAISE EXCEPTION 'Anonymous role can read reception data';
  END IF;
