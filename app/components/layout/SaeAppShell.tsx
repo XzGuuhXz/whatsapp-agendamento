@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -22,6 +22,39 @@ const navigation = [
   { href: "/horarios", label: "Horários" },
 ];
 
+type Theme = "light" | "dark";
+
+function getThemeSnapshot(): Theme {
+  try {
+    return window.localStorage.getItem("sae-theme") === "dark" ? "dark" : "light";
+  } catch {
+    return "light";
+  }
+}
+
+function getServerThemeSnapshot(): Theme {
+  return "light";
+}
+
+function subscribeToTheme(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  window.addEventListener("sae-theme-change", onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener("sae-theme-change", onChange);
+  };
+}
+
+function toggleSavedTheme(current: Theme) {
+  const next: Theme = current === "dark" ? "light" : "dark";
+  try {
+    window.localStorage.setItem("sae-theme", next);
+  } catch {
+    // O tema continua alternável mesmo quando o navegador bloqueia o armazenamento.
+  }
+  window.dispatchEvent(new Event("sae-theme-change"));
+}
+
 export default function SaeAppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -32,22 +65,11 @@ export default function SaeAppShell({ children }: { children: React.ReactNode })
   const [authError, setAuthError] = useState("");
   const [authBusy, setAuthBusy] = useState(false);
 
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [themeReady, setThemeReady] = useState(false);
+  const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerThemeSnapshot);
 
   useEffect(() => {
-    const storedTheme = window.localStorage.getItem("sae-theme");
-    if (storedTheme === "dark" || storedTheme === "light") {
-      setTheme(storedTheme);
-    }
-    setThemeReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!themeReady) return;
     document.documentElement.dataset.theme = theme;
-    window.localStorage.setItem("sae-theme", theme);
-  }, [theme, themeReady]);
+  }, [theme]);
 
   const loadProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
@@ -240,7 +262,7 @@ export default function SaeAppShell({ children }: { children: React.ReactNode })
           <button
             className="button button-secondary theme-toggle"
             type="button"
-            onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")}
+            onClick={() => toggleSavedTheme(theme)}
             aria-pressed={theme === "dark"}
             aria-label={theme === "dark" ? "Ativar tema claro" : "Ativar tema escuro"}
           >
