@@ -41,7 +41,7 @@ Os testes descritos nas PRs cobrem, entre outros:
 - deduplicação de mensagens;
 - claim/lease da fila outbox;
 - registro de mensagens;
-- privilégios de leitura por coluna;
+- privilégios de leitura por coluna, incluindo a chave `clients.id`;
 - bloqueio de acesso anônimo a dados privados.
 
 ## 6.4 CI — resultado registrado
@@ -64,7 +64,7 @@ Diagnóstico e correção:
 - JOIN com clientes, serviços e profissionais passou;
 - interface exibiu nome do paciente, serviço, profissional, horário e status.
 
-**Atenção:** o teste SQL de JOIN e a visualização no navegador foram confirmados no ambiente local. A correção adicional de privilégio ainda precisa ser formalizada em migration e testada no CI.
+**Atualização na branch `feat/dashboard-liquid-glass`:** a permissão mínima foi formalizada na migration `202611240006_reception_client_join_permission.sql`; `tests/database.sql` agora exige `SELECT(id)` para `authenticated` e confirma ausência desse privilégio para `anon`. O resultado do CI desta revisão deve ser conferido antes de considerar a correção validada.
 
 ## 6.6 O que não foi validado
 
@@ -72,7 +72,7 @@ Diagnóstico e correção:
 - Deploy público do painel não foi confirmado.
 - Fluxo de produção com cadastros oficiais do SAE não foi confirmado.
 - Testes de carga e recuperação operacional de produção não foram registrados.
-- A correção local de `clients.id` ainda não está incluída na migration 005 e deve ter migration própria revisada.
+- A migration 006 está somente na branch de dashboard e ainda não foi aplicada ao Supabase remoto.
 
 ## 6.7 Critério de conclusão
 
