@@ -954,30 +954,30 @@ h3 {
 /* Tema escuro — aplicado ao painel inteiro e mantido no navegador. */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  background: #111715;
-  color: #e7eeeb;
+  background: #111315;
+  color: #e8eaed;
 }
 
 :root[data-theme="dark"] body,
 :root[data-theme="dark"] .auth-screen {
-  background: #111715;
-  color: #e7eeeb;
+  background: #111315;
+  color: #e8eaed;
 }
 
 :root[data-theme="dark"] .app-sidebar,
 :root[data-theme="dark"] .app-topbar,
 :root[data-theme="dark"] .surface-card,
 :root[data-theme="dark"] .auth-card {
-  border-color: #303c36;
-  background: #19221e;
+  border-color: #30343a;
+  background: #1b1e22;
 }
 
 :root[data-theme="dark"] .app-sidebar {
-  border-right-color: #303c36;
+  border-right-color: #30343a;
 }
 
 :root[data-theme="dark"] .app-topbar {
-  border-bottom-color: #303c36;
+  border-bottom-color: #30343a;
 }
 
 :root[data-theme="dark"] .app-brand,
@@ -988,7 +988,7 @@ h3 {
 :root[data-theme="dark"] h3,
 :root[data-theme="dark"] .day-summary strong,
 :root[data-theme="dark"] .day-summary .summary-date {
-  color: #e7eeeb;
+  color: #e8eaed;
 }
 
 :root[data-theme="dark"] .app-brand small,
@@ -1007,44 +1007,44 @@ h3 {
 :root[data-theme="dark"] .hours-state,
 :root[data-theme="dark"] .link-card-heading small,
 :root[data-theme="dark"] .link-professional small {
-  color: #aab7b0;
+  color: #aeb4bd;
 }
 
 :root[data-theme="dark"] .brand-mark {
-  border-color: #43524a;
-  color: #e7eeeb;
+  border-color: #454b54;
+  color: #e8eaed;
 }
 
 :root[data-theme="dark"] .nav-link {
-  color: #c5d0ca;
+  color: #c8cdd4;
 }
 
 :root[data-theme="dark"] .nav-link:hover {
-  background: #222e28;
-  color: #f1f5f3;
+  background: #262b31;
+  color: #f1f3f5;
 }
 
 :root[data-theme="dark"] .nav-link.is-active {
-  background: #193b38;
-  color: #8bd0c8;
+  background: #293238;
+  color: #9bd4cc;
 }
 
 :root[data-theme="dark"] a {
-  color: #8bd0c8;
+  color: #8fcfc6;
 }
 
 :root[data-theme="dark"] .button-secondary,
 :root[data-theme="dark"] .button:not(.button-primary),
 :root[data-theme="dark"] .table-actions button {
-  border-color: #435149;
-  background: #202b25;
-  color: #e1e9e5;
+  border-color: #454b54;
+  background: #252a30;
+  color: #e1e4e8;
 }
 
 :root[data-theme="dark"] .button-secondary:hover,
 :root[data-theme="dark"] .button:not(.button-primary):hover,
 :root[data-theme="dark"] .table-actions button:hover {
-  background: #293831;
+  background: #30363e;
 }
 
 :root[data-theme="dark"] .button-primary {
@@ -1062,7 +1062,7 @@ h3 {
 :root[data-theme="dark"] .compact-form label,
 :root[data-theme="dark"] .filter-row label,
 :root[data-theme="dark"] .hours-day {
-  color: #d7e0db;
+  color: #d9dde2;
 }
 
 :root[data-theme="dark"] .auth-form input,
@@ -1070,25 +1070,25 @@ h3 {
 :root[data-theme="dark"] .filter-row input,
 :root[data-theme="dark"] .hours-field input,
 :root[data-theme="dark"] .status-select {
-  border-color: #435149;
-  background: #111a15;
-  color: #e7eeeb;
+  border-color: #454b54;
+  background: #15181c;
+  color: #e8eaed;
 }
 
 :root[data-theme="dark"] .auth-form input::placeholder,
 :root[data-theme="dark"] .compact-form input::placeholder {
-  color: #8a9890;
+  color: #9299a3;
 }
 
 :root[data-theme="dark"] .data-table th {
-  border-bottom-color: #3a4740;
-  background: #222d27;
-  color: #b8c5be;
+  border-bottom-color: #3a4048;
+  background: #252a30;
+  color: #bdc3cb;
 }
 
 :root[data-theme="dark"] .data-table td {
-  border-bottom-color: #2e3a33;
-  color: #dbe4df;
+  border-bottom-color: #30363e;
+  color: #dce0e5;
 }
 
 :root[data-theme="dark"] .status-active,
@@ -1104,7 +1104,7 @@ h3 {
 
 :root[data-theme="dark"] .status-scheduled,
 :root[data-theme="dark"] .status-no_show {
-  color: #c1cbc5;
+  color: #c1c7cf;
 }
 
 :root[data-theme="dark"] .error-box {
@@ -1122,37 +1122,37 @@ h3 {
 }
 
 :root[data-theme="dark"] .help-text {
-  border-color: #3a4841;
-  background: #202b25;
-  color: #c5d0ca;
+  border-color: #3d434b;
+  background: #252a30;
+  color: #c8cdd4;
 }
 
 :root[data-theme="dark"] .hours-row,
 :root[data-theme="dark"] .link-professional {
-  border-bottom-color: #303c36;
-  border-top-color: #303c36;
+  border-bottom-color: #30343a;
+  border-top-color: #30343a;
 }
 
 :root[data-theme="dark"] .link-card {
-  border-color: #39463f;
-  background: #1d2822;
+  border-color: #3d434b;
+  background: #20252a;
 }
 
 :root[data-theme="dark"] .muted-note {
-  color: #aab7b0;
+  color: #aeb4bd;
 }
 
 :root[data-theme="dark"] .hours-disabled .hours-field {
-  color: #76847c;
+  color: #858c96;
 }
 
 :root[data-theme="dark"] :focus-visible {
-  outline-color: #8bd0c8;
+  outline-color: #8fcfc6;
 }
 
 :root[data-theme="dark"] .theme-toggle {
-  border-color: #49645d;
-  color: #a8ded7;
+  border-color: #454b54;
+  color: #d1d6dc;
 }
 
 @media (max-width: 760px) {
