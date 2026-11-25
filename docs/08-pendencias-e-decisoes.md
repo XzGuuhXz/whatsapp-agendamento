@@ -3,12 +3,12 @@
 ## 8.1 Pendências prioritárias
 
 ### P0 — Permissão de relacionamento na agenda
-- [x] Formalizar na branch `feat/dashboard-liquid-glass` a concessão mínima `SELECT(id)` em `public.clients` para `authenticated`, via migration 006.
+- [x] Formalizar na branch `feat/sae-simple-admin` a concessão mínima `SELECT(id)` em `public.clients` para `authenticated`, via migration 006.
 - [x] Manter `phone` e `email` sem leitura para `authenticated`.
 - [x] Manter `appointments.notes` inacessível conforme migration 005.
-- [ ] Confirmar testes SQL/CI da migration 006.
-- [ ] Testar o endpoint PostgREST autenticado, não somente SQL direto.
-- [ ] Aplicar ao remoto somente após revisão e autorização explícita, caso a mudança seja necessária naquele ambiente.
+- [x] Confirmar testes SQL/CI da migration 006 (CI #167).
+- [ ] Testar o endpoint PostgREST com uma sessão real de funcionário.
+- [x] Aplicar migration 006 ao Supabase remoto em 25/11/2026 e verificar os privilégios por coluna.
 
 ### P1 — Dados operacionais do SAE
 - [ ] Confirmar lista oficial de serviços e respectivas durações.
@@ -32,8 +32,9 @@
 - [ ] Definir procedimento administrativo de criação, desativação e revisão de funcionários.
 
 ### P2 — Entrega
-- [ ] Reconciliar HEAD remoto e local das branches relevantes.
-- [ ] Revisar estado e destino das PRs #1–#3.
+- [x] Reconciliar o HEAD remoto das branches relevantes.
+- [x] Mesclar PR #1 em `main`.
+- [ ] Consolidar a versão atual do painel em um único PR para `main` e encerrar os PRs #2 e #3 substituídos.
 - [ ] Definir ambiente de hospedagem e processo de deploy.
 - [ ] Executar teste ponta a ponta em ambiente controlado.
 - [ ] Preparar plano de rollback e operação.
@@ -61,7 +62,7 @@
 - Baileys é um transporte não oficial e tem limitações funcionais e riscos próprios.
 - Não há deploy público confirmado.
 - A documentação histórica de `main` pode estar desatualizada em relação às branches de desenvolvimento.
-- A correção de `clients.id` está versionada na migration 006 da branch `feat/dashboard-liquid-glass`, mas ainda não foi aplicada ao Supabase remoto.
+- A migration 006 foi aplicada ao Supabase remoto em 25/11/2026; falta somente validar o relacionamento via PostgREST usando uma sessão real de funcionário.
 
 ## 8.4 Critérios para considerar o projeto pronto para operação
 
