@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import SaeAppShell from "./components/layout/SaeAppShell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -19,11 +20,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="pt-BR"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="pt-BR" className={geistSans.variable + " " + geistMono.variable}>
+      <body>
+        <SaeAppShell>{children}</SaeAppShell>
+      </body>
     </html>
   );
 }

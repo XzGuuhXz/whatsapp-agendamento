@@ -38,6 +38,12 @@ Os valores acima devem ser mantidos sincronizados com as regras e testes SQL atu
 - Papéis previstos: `admin` e `recepcao`.
 - Acesso condicionado a perfil ativo.
 - Não existe fluxo de auto cadastro público de funcionários.
+- A verificação do perfil, a tela de login e a saída da sessão ficam centralizadas no layout compartilhado do painel.
+
+### Navegação
+- Layout único para Início, Agenda, Serviços, Profissionais, Vínculos e Horários.
+- Serviços e Profissionais são rotas próprias (`/servicos` e `/profissionais`), com navegação por `next/link`.
+- A navegação permanece disponível em telas estreitas.
 
 ### Catálogo
 - Serviços: consultar, cadastrar, editar e desativar.
@@ -45,20 +51,18 @@ Os valores acima devem ser mantidos sincronizados com as regras e testes SQL atu
 - Vínculos: associar profissionais aos serviços.
 - Expediente: configurar os dias e horários globais.
 
-As operações dependem das policies e permissões instaladas no banco.
+As operações dependem das policies e permissões instaladas no banco. Cadastros só devem refletir informações confirmadas pela coordenação.
 
 ### Visão geral administrativa — `/`
-Na branch `feat/dashboard-liquid-glass`, a tela inicial autenticada possui:
-- quatro indicadores dos últimos sete dias: agendamentos, confirmados, concluídos e cancelados;
-- comparação percentual com os sete dias anteriores, sem inventar base quando o período anterior é zero;
-- gráfico SVG de volume diário, com tooltip por hover, foco e teclado;
-- taxa de conclusão calculada sobre agendamentos válidos, excluindo cancelamentos e faltas;
-- próximos horários, incluindo o restante do dia atual, e atendimentos recentes;
-- contagens de serviços e profissionais ativos;
-- busca rápida por `Ctrl+K` ou `Cmd+K`, notificações de catálogo e atalhos;
-- tema escuro Liquid Glass e layout Bento responsivo.
+A tela inicial autenticada é voltada à rotina da recepção:
+- lista de todos os atendimentos do dia com hora, paciente, serviço, profissional e status;
+- linha de resumo com total, pendentes e confirmados do dia;
+- lista separada de próximos atendimentos;
+- aviso textual quando não há serviços ativos ou profissionais ativos;
+- estado de erro com mensagem e ação para tentar a consulta novamente;
+- consultas de data e hora formatadas no fuso `America/Campo_Grande`.
 
-Os indicadores são calculados sobre dados consultados do Supabase. Em caso de falha de leitura, os KPIs mostram estado indisponível em vez de apresentar zeros como se fossem dados válidos. Essa implementação está em branch de feature; não significa merge, aplicação de migration remota ou deploy.
+A tela não apresenta indicadores históricos, KPIs, sparklines, gráficos, taxa de conclusão, atalhos ou relatórios. Os dados da agenda são consultados diretamente no Supabase; em caso de falha, os totais ficam indisponíveis em vez de serem apresentados como zeros.
 
 ## 2.3 Agenda — `/agenda`
 
@@ -67,11 +71,9 @@ A agenda diária apresenta:
 - nome do paciente;
 - serviço;
 - profissional;
-- status.
+- status em um único seletor.
 
-A interface permite atualização de status conforme as permissões do banco. A lista de status suportados deve ser conferida no tipo e no schema da branch usada para executar a aplicação.
-
-A consulta de 24/11/2026 foi validada visualmente no ambiente local: um agendamento apareceu com data 27/11/2026 às 08:00, nome do paciente, serviço, profissional e status pendente.
+A data é definida pelo filtro da agenda, por isso a coluna de horário mostra somente a hora. A interface permite atualização de status conforme as permissões do banco. A lista de status suportados deve ser conferida no tipo e no schema da branch usada para executar a aplicação.
 
 ## 2.4 Expediente — `/horarios`
 
@@ -79,6 +81,7 @@ A consulta de 24/11/2026 foi validada visualmente no ambiente local: um agendame
 - Dias sem expediente cadastrado começam desativados.
 - O sistema não presume horários de funcionamento.
 - A configuração alimenta o cálculo de disponibilidade.
+- A interface mantém os estados de carregamento, vazio e erro, com opção de tentar novamente.
 
 Limitação conhecida: o modelo atual é global; não cobre pausas intradiárias nem expediente individual por profissional.
 
