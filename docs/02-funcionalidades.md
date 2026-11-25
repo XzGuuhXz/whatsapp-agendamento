@@ -47,6 +47,19 @@ Os valores acima devem ser mantidos sincronizados com as regras e testes SQL atu
 
 As operações dependem das policies e permissões instaladas no banco.
 
+### Visão geral administrativa — `/`
+Na branch `feat/dashboard-liquid-glass`, a tela inicial autenticada possui:
+- quatro indicadores dos últimos sete dias: agendamentos, confirmados, concluídos e cancelados;
+- comparação percentual com os sete dias anteriores, sem inventar base quando o período anterior é zero;
+- gráfico SVG de volume diário, com tooltip por hover, foco e teclado;
+- taxa de conclusão calculada sobre agendamentos válidos, excluindo cancelamentos e faltas;
+- próximos horários, incluindo o restante do dia atual, e atendimentos recentes;
+- contagens de serviços e profissionais ativos;
+- busca rápida por `Ctrl+K` ou `Cmd+K`, notificações de catálogo e atalhos;
+- tema escuro Liquid Glass e layout Bento responsivo.
+
+Os indicadores são calculados sobre dados consultados do Supabase. Em caso de falha de leitura, os KPIs mostram estado indisponível em vez de apresentar zeros como se fossem dados válidos. Essa implementação está em branch de feature; não significa merge, aplicação de migration remota ou deploy.
+
 ## 2.3 Agenda — `/agenda`
 
 A agenda diária apresenta:
