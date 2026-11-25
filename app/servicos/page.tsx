@@ -41,7 +41,10 @@ export default function ServicesPage() {
   }, []);
 
   useEffect(() => {
-    void loadServices();
+    const timer = window.setTimeout(() => {
+      void loadServices();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [loadServices]);
 
   function resetForm() {

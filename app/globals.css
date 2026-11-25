@@ -54,7 +54,7 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 2px solid #147d78;
+  outline: 2px solid #67746f;
   outline-offset: 2px;
 }
 
@@ -122,7 +122,7 @@ h3 {
   place-items: center;
   border: 1px solid #cbd7d4;
   border-radius: 5px;
-  color: #147d78;
+  color: #2b3531;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -413,8 +413,8 @@ h3 {
 .filter-row input:focus,
 .hours-field input:focus,
 .status-select:focus {
-  border-color: #147d78;
-  outline: 2px solid #d5e9e7;
+  border-color: #89958f;
+  outline: 2px solid #e8eeeb;
   outline-offset: 0;
 }
 
@@ -625,7 +625,7 @@ h3 {
   border: 1px solid #d2dbd8;
   border-radius: 4px;
   background: #fff;
-  color: #147d78;
+  color: #27312e;
   font-size: 12px;
   font-weight: 550;
 }

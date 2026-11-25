@@ -75,7 +75,10 @@ export default function AgendaPage() {
   }, [date]);
 
   useEffect(() => {
-    void loadAppointments();
+    const timer = window.setTimeout(() => {
+      void loadAppointments();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [loadAppointments]);
 
   async function updateStatus(id: string, status: Appointment["status"]) {
