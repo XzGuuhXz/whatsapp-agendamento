@@ -1,6 +1,6 @@
 import {spawn} from 'node:child_process';
 const child=spawn(process.execPath,['node_modules/next/dist/bin/next','start','--hostname','127.0.0.1','--port','3110'],{
- env:{...process.env,WHATSAPP_APP_SECRET:'test-app-secret',WHATSAPP_PHONE_NUMBER_ID:'123',WHATSAPP_VERIFY_TOKEN:'test-verify-token'},
+ env:{...process.env,WHATSAPP_TRANSPORT:"meta",WHATSAPP_APP_SECRET:'test-app-secret',WHATSAPP_PHONE_NUMBER_ID:'123',WHATSAPP_VERIFY_TOKEN:'test-verify-token'},
  stdio:['ignore','pipe','pipe'],
 });
 try {

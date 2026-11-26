@@ -80,7 +80,6 @@ export default function ServicesPage() {
     const payload = {
       name: serviceName.trim(),
       duration_minutes: minutes,
-      price: null,
     };
 
     const result = editingId

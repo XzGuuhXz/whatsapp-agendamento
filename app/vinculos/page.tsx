@@ -108,6 +108,7 @@ export default function ServiceProfessionalLinksPage() {
           </button>
         </div>
 
+        {message && <p className="success-message" role="status">{message}</p>}
         {error && (
           <div className="error-box" role="alert">
             <p>{error}</p>

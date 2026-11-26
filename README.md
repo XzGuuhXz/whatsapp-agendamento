@@ -1,6 +1,6 @@
 # WhatsApp Agendamento
 
-Sistema de agendamento do SAE por WhatsApp, com painel interno de recepção, desenvolvido em Next.js, TypeScript e Supabase. A branch `feat/sae-simple-admin` reúne o chatbot, os transportes Meta/Baileys e os módulos administrativos.
+Sistema de agendamento do SAE por WhatsApp, com painel interno de recepção, desenvolvido em Next.js, TypeScript e Supabase. A branch `main` reúne o chatbot, os transportes Meta/Baileys e os módulos administrativos.
 
 ## O que está implementado
 
